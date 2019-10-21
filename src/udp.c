@@ -38,6 +38,7 @@
 
 #include "udp.h"
 #include "trudp_utils.h"
+#include "teobase/socket.h"
 
 #define h_addr h_addr_list[0]
 
@@ -193,7 +194,10 @@ int trudpUdpBindRaw(int *port, int allow_port_increment_f) {
             );
             (*port)++;
             if(allow_port_increment_f && i++ < NUMBER_OF_TRY_PORTS) continue;
-            else return -2;
+            else {
+                teosockClose(fd);
+                return -2;
+            }
         }
 
         // Bind successfully
