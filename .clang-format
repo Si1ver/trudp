@@ -1,0 +1,16 @@
+---
+# clang-format settings for older C projects
+# LLVM description: https://clang.llvm.org/docs/ClangFormatStyleOptions.html
+BasedOnStyle:  LLVM
+Language:        Cpp
+AllowShortBlocksOnASingleLine: true
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortIfStatementsOnASingleLine: true
+AllowShortLoopsOnASingleLine: true
+ColumnLimit:     100
+IndentWidth:     4
+SortIncludes:    false
+SpaceBeforeParens: Never
+TabWidth:        4
+...
+
