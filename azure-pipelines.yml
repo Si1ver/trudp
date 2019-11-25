@@ -1,0 +1,14 @@
+trigger:
+- 'develop'
+
+jobs:
+- job: build_linux
+  pool:
+    vmImage: 'ubuntu-18.04'
+  steps:
+  - checkout: self
+    submodules: true
+  - bash: 'sudo apt install -y libev-dev libcunit1-dev'
+  - bash: 'autoreconf --install'
+  - bash: './configure CPPFLAGS=-DNDEBUG'
+  - bash: 'make'
