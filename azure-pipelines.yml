@@ -12,3 +12,27 @@ jobs:
   - bash: 'autoreconf --install'
   - bash: './configure CPPFLAGS=-DNDEBUG'
   - bash: 'make'
+- job: build_windows_x86
+  pool:
+    vmImage: 'windows-2019'
+  steps:
+  - checkout: self
+    submodules: true
+  - task: MSBuild@1
+    inputs:
+      solution: 'msvc/trudp.sln' 
+      platform: x86
+      configuration: Release
+      msbuildArguments: -target:trudp-static
+- job: build_windows_x86_64
+  pool:
+    vmImage: 'windows-2019'
+  steps:
+  - checkout: self
+    submodules: true
+  - task: MSBuild@1
+    inputs:
+      solution: 'msvc/trudp.sln' 
+      platform: x64
+      configuration: Release
+      msbuildArguments: -target:trudp-static
