@@ -30,22 +30,28 @@
 #ifndef TRUDP_API_H
 #define TRUDP_API_H
 
-#if defined(_WIN32)
+#include "teobase/platform.h"
+
+// Default behavior is static library.
+// To build dynamic library, define TRUDP_DYNAMIC and TRUDP_EXPORTS.
+// To import dynamic library, define TRUDP_DYNAMIC.
+// TRUDP_API macro should be used on all public API functions.
+// TRUDP_INTERNAL macro should be used on functions used only in this library.
+#if defined(TRUDP_DYNAMIC)
+#if defined(TEONET_OS_WINDOWS)
 #if defined(TRUDP_EXPORTS)
 #define TRUDP_API __declspec(dllexport)
 #else
 #define TRUDP_API __declspec(dllimport)
 #endif
+#define TRUDP_INTERNAL
 #else
-#define TRUDP_API __attribute__ ((visibility ("default")))
+#define TRUDP_API __attribute__((visibility("default")))
+#define TRUDP_INTERNAL __attribute__((visibility("hidden")))
 #endif
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#ifdef __cplusplus
-}
+#else
+#define TRUDP_API
+#define TRUDP_INTERNAL
 #endif
 
 #endif /* TRUDP_API_H */
