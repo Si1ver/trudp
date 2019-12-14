@@ -35,7 +35,7 @@
 
 #include "teoccl/queue.h"
 
-#include "packet.h"
+#include "trudp/packet.h"
 
 #ifdef __cplusplus
 extern "C" {

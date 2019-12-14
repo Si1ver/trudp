@@ -68,8 +68,8 @@ trudpWriteQueue *trudpWriteQueueNew();
  * @param wq Pointer to trudpWriteQueue
  */
 
-void trudpWriteQueueDestroy(trudpWriteQueue *wq); 
-  
+void trudpWriteQueueDestroy(trudpWriteQueue *wq);
+
 /**
  * Remove all elements from Write queue
  *

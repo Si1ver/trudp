@@ -37,7 +37,7 @@
 #include "trudp_channel.h"
 #include "trudp_utils.h"
 
-#include "packet.h"
+#include "trudp/packet.h"
 #include "trudp_stat.h"
 #include "packet_queue.h"
 

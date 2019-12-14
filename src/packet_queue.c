@@ -31,7 +31,7 @@
 #include <string.h>
 
 #include "packet_queue.h"
-#include "packet.h"
+#include "trudp/packet.h"
 
 // Local functions
 

@@ -28,14 +28,15 @@
 #define TR_UDP_H
 
 #include "teoccl/map.h"
+
 #include "packet_queue.h"
 #include "write_queue.h"
-#include "packet.h"
+#include "trudp/packet.h"
 #include "udp.h"
 
 #include "trudp_channel.h"
-#include "trudp_const.h"
-#include "trudp_api.h"
+#include "trudp/constants.h"
+#include "trudp/api.h"
 
 #ifdef __cplusplus
 extern "C" {

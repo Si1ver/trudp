@@ -32,7 +32,7 @@
 //#include <time.h>
 
 #include "trudp_utils.h"
-#include "trudp_const.h"
+#include "trudp/constants.h"
 
 #if defined(HAVE_MINGW) || defined(_WIN32)
 #define WIN32_LEAN_AND_MEAN

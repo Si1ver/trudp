@@ -20,7 +20,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * 
+ *
  * \file   utils.h
  * \author Kirill Scherba <kirill@scherba.ru>
  *
@@ -30,9 +30,10 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include <stdint.h>
 #include <time.h>
 
-#include "trudp_api.h"
+#include "trudp/api.h"
 
 #ifdef __cplusplus
 extern "C" {

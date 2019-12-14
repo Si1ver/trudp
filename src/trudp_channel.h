@@ -62,8 +62,8 @@ typedef _W64 unsigned int   ssize_t;
 #include <sys/socket.h>
 #endif
 
-#include "trudp_api.h"
-#include "trudp_const.h"
+#include "trudp/api.h"
+#include "trudp/constants.h"
 #include "trudp_send_queue.h"
 #include "trudp_receive_queue.h"
 
