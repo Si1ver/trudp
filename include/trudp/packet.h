@@ -23,7 +23,7 @@
  */
 
 /*
- * File:   packet.h
+ * File:   trudp/packet.h
  * Author: Kirill Scherba <kirill@scherba.ru>
  *
  * Created on May 30, 2016, 5:47 PM
@@ -35,7 +35,7 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#include "trudp_api.h"
+#include "trudp/api.h"
 
 #ifdef __cplusplus
 extern "C" {
