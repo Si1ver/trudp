@@ -29,8 +29,8 @@
  * Created on May 30, 2016, 5:47 PM
  */
 
-#ifndef PACKET_H
-#define PACKET_H
+#ifndef TRUDP_PACKET_H
+#define TRUDP_PACKET_H
 
 #include <stdint.h>
 #include <stddef.h>
@@ -116,4 +116,4 @@ const char *STRING_trudpPacketType(trudpPacketType value);
 }
 #endif
 
-#endif /* PACKET_H */
+#endif /* TRUDP_PACKET_H */

@@ -23,14 +23,14 @@
  */
 
 /*
- * \file   trudp_const.h
+ * \file   trudp/constants.h
  * \author Kirill Scherba <kirill@scherba.ru>
  *
  * Created on July 21, 2016, 12:34 AM
  */
 
-#ifndef TRUDP_CONST_H
-#define TRUDP_CONST_H
+#ifndef TRUDP_CONSTANTS_H
+#define TRUDP_CONSTANTS_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -59,4 +59,4 @@ extern "C" {
 }
 #endif
 
-#endif /* TRUDP_CONST_H */
+#endif /* TRUDP_CONSTANTS_H */

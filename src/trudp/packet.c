@@ -31,7 +31,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "packet.h"
+#include "trudp/packet.h"
 
 #include "teobase/time.h"
 
