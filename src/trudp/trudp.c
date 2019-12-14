@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  *
- * \file   tr-udp.c
+ * \file   trudp/trudp.c
  * \author Kirill Scherba <kirill@scherba.ru>
  *
  * Created on May 31, 2016, 1:44 AM
@@ -33,7 +33,7 @@
 
 #include "teoccl/memory.h"
 
-#include "trudp.h"
+#include "trudp/trudp.h"
 #include "trudp_channel.h"
 #include "trudp_utils.h"
 

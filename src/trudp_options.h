@@ -5,7 +5,7 @@
 
 #include <stdbool.h>
 
-#include "trudp_api.h"
+#include "trudp/api.h"
 
 #ifdef __cplusplus
 extern "C" {

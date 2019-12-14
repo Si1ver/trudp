@@ -24,19 +24,18 @@
  * Created on May 31, 2016, 1:45 AM
  */
 
-#ifndef TR_UDP_H
-#define TR_UDP_H
+#ifndef TRUDP_TRUDP_H
+#define TRUDP_TRUDP_H
 
 #include "teoccl/map.h"
 
+#include "trudp/api.h"
+#include "trudp/constants.h"
 #include "packet_queue.h"
 #include "write_queue.h"
 #include "trudp/packet.h"
-#include "udp.h"
-
+#include "trudp/udp.h"
 #include "trudp_channel.h"
-#include "trudp/constants.h"
-#include "trudp/api.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -261,4 +260,4 @@ const char * STRING_trudpEvent(trudpEvent val);
 }
 #endif
 
-#endif /* TR_UDP_H */
+#endif /* TRUDP_TRUDP_H */

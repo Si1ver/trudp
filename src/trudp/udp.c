@@ -37,7 +37,7 @@
 //extern int inet_aton (const char *__cp, struct in_addr *__inp) __THROW;
 #endif
 
-#include "udp.h"
+#include "trudp/udp.h"
 #include "trudp_utils.h"
 #include "trudp_options.h"
 
@@ -67,7 +67,6 @@ static ssize_t _trudpUdpReadEventLoop(int fd, void *buffer, size_t buffer_size,
  * @param fd
  */
 static void _trudpUdpSetNonblock(int fd) {
-
     #if defined(HAVE_MINGW) || defined(_WIN32) || defined(_WIN64)
     //-------------------------
     // Set the socket I/O mode: In this case FIONBIO
@@ -127,7 +126,6 @@ static void _trudpUdpHostToIp(struct sockaddr_in *remaddr, const char *server) {
  */
 int trudpUdpMakeAddr(const char *addr, int port, __SOCKADDR_ARG remaddr,
         socklen_t *addr_length) {
-
     if(*addr_length < sizeof(struct sockaddr_in)) return -3;
 
     *addr_length = sizeof(struct sockaddr_in); // length of addresses
@@ -224,7 +222,6 @@ int trudpUdpBindRaw(int *port, int allow_port_increment_f) {
  */
 ssize_t trudpUdpRecvfrom(int fd, void *buffer, size_t buffer_size,
         __SOCKADDR_ARG remaddr, socklen_t *addr_length) {
-
     int flags = 0;
 
     // Read UDP data
@@ -244,7 +241,6 @@ ssize_t trudpUdpRecvfrom(int fd, void *buffer, size_t buffer_size,
  * @return -1 - error; 0 - timeout; >0 ready
  */
 static int _trudpUdpIsReadable(int sd, uint32_t timeOut) {
-
     int rv = 1;
 
     fd_set socketReadSet;
@@ -269,7 +265,6 @@ static int _trudpUdpIsReadable(int sd, uint32_t timeOut) {
  * @return -1 - error; 0 - timeout; >0 ready
  */
 static int _trudpUdpIsWritable(int sd, uint32_t timeOut) {
-
     int rv = 1;
 
     fd_set socketWriteSet;
@@ -297,7 +292,6 @@ static int _trudpUdpIsWritable(int sd, uint32_t timeOut) {
  */
  ssize_t trudpUdpSendto(int fd, void *buffer, size_t buffer_size,
         __CONST_SOCKADDR_ARG remaddr, socklen_t addrlen) {
-
     CLTRACK(trudpOpt_DBG_sendto, "TrUdp", "Sending %u bytes using sendto().",
              (uint32_t)buffer_size);
 
@@ -339,7 +333,6 @@ static int _trudpUdpIsWritable(int sd, uint32_t timeOut) {
  */
 static ssize_t _trudpUdpReadEventLoop(int fd, void *buffer, size_t buffer_size,
         __SOCKADDR_ARG remaddr, socklen_t *addr_length, int timeout) {
-
     int rv;
     fd_set rfds;
     struct timeval tv;
@@ -358,7 +351,6 @@ static ssize_t _trudpUdpReadEventLoop(int fd, void *buffer, size_t buffer_size,
 
     // Timeout
     else if(!rv) { // Idle or Timeout event
-
         //send_l0_event(con, EV_L_IDLE, NULL, 0);
     }
     // There is a data in fd

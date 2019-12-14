@@ -32,8 +32,8 @@
 
 #include <string.h>
 
-#include "trudp.h"
 #include "trudp/api.h"
+#include "trudp/trudp.h"
 
 #ifdef __cplusplus
 extern "C" {

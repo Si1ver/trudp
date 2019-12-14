@@ -23,17 +23,16 @@
  */
 
 /*
- * File:   udp.h
+ * File:   trudp/udp.h
  * Author: Kirill Scherba <kirill@scherba.ru>
  *
  * Created on June 2, 2016, 12:36 PM
  */
 
-#ifndef UDP_H
-#define UDP_H
+#ifndef TRUDP_UDP_H
+#define TRUDP_UDP_H
 
 #if defined(HAVE_MINGW) || defined(_WIN32)
-
     #define WIN32_LEAN_AND_MEAN
     // TODO: Stop using deprecated functions and remove this define.
     #define _WINSOCK_DEPRECATED_NO_WARNINGS
@@ -41,16 +40,16 @@
     #include <ws2tcpip.h>
     typedef int socklen_t;
 
-    #define __SOCKADDR_ARG		struct sockaddr *__restrict
-    #define __CONST_SOCKADDR_ARG	const struct sockaddr *
+    #define __SOCKADDR_ARG struct sockaddr *__restrict
+    #define __CONST_SOCKADDR_ARG const struct sockaddr *
 
     #ifndef _SSIZE_T_DEFINED
     typedef intptr_t ssize_t;
     #define _SSIZE_T_DEFINED
     #endif
 #elif defined(__ANDROID__) || defined(__APPLE__)
-    #define __SOCKADDR_ARG		struct sockaddr *__restrict
-    #define __CONST_SOCKADDR_ARG	const struct sockaddr *
+    #define __SOCKADDR_ARG struct sockaddr *__restrict
+    #define __CONST_SOCKADDR_ARG const struct sockaddr *
     #include <netdb.h>
     #include <arpa/inet.h>
     #include <sys/socket.h>
@@ -76,9 +75,8 @@ TRUDP_API ssize_t trudpUdpRecvfrom(int fd, void *buffer, size_t buffer_size,
 TRUDP_API int trudpUdpMakeAddr(const char *addr, int port, __SOCKADDR_ARG remaddr,
         socklen_t *addr_len);
 
-
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* UDP_H */
+#endif /* TRUDP_UDP_H */
