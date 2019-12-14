@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  *
- * \file   trudp_api.h
+ * \file   trudp/api.h
  * \author Kirill Scherba <kirill@scherba.ru>
  *
  * Created on March 16, 2018, 4:07 PM
