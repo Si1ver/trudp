@@ -18,36 +18,87 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\libs\teobase\include\teobase\api.h" />
+    <ClInclude Include="..\..\libs\teobase\include\teobase\logging.h" />
+    <ClInclude Include="..\..\libs\teobase\include\teobase\mutex.h" />
+    <ClInclude Include="..\..\libs\teobase\include\teobase\platform.h" />
+    <ClInclude Include="..\..\libs\teobase\include\teobase\socket.h" />
+    <ClInclude Include="..\..\libs\teobase\include\teobase\time.h" />
+    <ClInclude Include="..\..\libs\teobase\include\teobase\windows.h" />
+    <ClInclude Include="..\..\libs\teoccl\include\teoccl\array_list.h" />
+    <ClInclude Include="..\..\libs\teoccl\include\teoccl\hash.h" />
+    <ClInclude Include="..\..\libs\teoccl\include\teoccl\map.h" />
+    <ClInclude Include="..\..\libs\teoccl\include\teoccl\memory.h" />
+    <ClInclude Include="..\..\libs\teoccl\include\teoccl\queue.h" />
+    <ClInclude Include="..\..\src\packet.h" />
+    <ClInclude Include="..\..\src\packet_queue.h" />
+    <ClInclude Include="..\..\src\trudp.h" />
+    <ClInclude Include="..\..\src\trudp_api.h" />
+    <ClInclude Include="..\..\src\trudp_channel.h" />
+    <ClInclude Include="..\..\src\trudp_const.h" />
+    <ClInclude Include="..\..\src\trudp_options.h" />
+    <ClInclude Include="..\..\src\trudp_receive_queue.h" />
+    <ClInclude Include="..\..\src\trudp_send_queue.h" />
+    <ClInclude Include="..\..\src\trudp_stat.h" />
+    <ClInclude Include="..\..\src\trudp_utils.h" />
+    <ClInclude Include="..\..\src\udp.h" />
+    <ClInclude Include="..\..\src\utils.h" />
+    <ClInclude Include="..\..\src\utils_r.h" />
+    <ClInclude Include="..\..\src\write_queue.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\libs\teobase\src\teobase\logging.c" />
+    <ClCompile Include="..\..\libs\teobase\src\teobase\mutex.c" />
+    <ClCompile Include="..\..\libs\teobase\src\teobase\socket.c" />
+    <ClCompile Include="..\..\libs\teobase\src\teobase\time.c" />
+    <ClCompile Include="..\..\libs\teoccl\src\teoccl\array_list.c" />
+    <ClCompile Include="..\..\libs\teoccl\src\teoccl\hash.c" />
+    <ClCompile Include="..\..\libs\teoccl\src\teoccl\map.c" />
+    <ClCompile Include="..\..\libs\teoccl\src\teoccl\memory.c" />
+    <ClCompile Include="..\..\libs\teoccl\src\teoccl\queue.c" />
+    <ClCompile Include="..\..\src\packet.c" />
+    <ClCompile Include="..\..\src\packet_queue.c" />
+    <ClCompile Include="..\..\src\trudp.c" />
+    <ClCompile Include="..\..\src\trudp_channel.c" />
+    <ClCompile Include="..\..\src\trudp_options.c" />
+    <ClCompile Include="..\..\src\trudp_receive_queue.c" />
+    <ClCompile Include="..\..\src\trudp_send_queue.c" />
+    <ClCompile Include="..\..\src\trudp_stat.c" />
+    <ClCompile Include="..\..\src\trudp_utils.c" />
+    <ClCompile Include="..\..\src\udp.c" />
+    <ClCompile Include="..\..\src\write_queue.c" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{92A32E51-A60D-4F5F-8F2F-D29B5C85AA4E}</ProjectGuid>
     <RootNamespace>libtrudp</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -76,6 +127,8 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\libs\teobase\src;$(SolutionDir)..\libs\teobase\include;$(SolutionDir)..\libs\teoccl\src;$(SolutionDir)..\libs\teoccl\include;$(SolutionDir)..\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -84,6 +137,8 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\libs\teobase\src;$(SolutionDir)..\libs\teobase\include;$(SolutionDir)..\libs\teoccl\src;$(SolutionDir)..\libs\teoccl\include;$(SolutionDir)..\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -94,6 +149,8 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\libs\teobase\src;$(SolutionDir)..\libs\teobase\include;$(SolutionDir)..\libs\teoccl\src;$(SolutionDir)..\libs\teoccl\include;$(SolutionDir)..\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -108,43 +165,14 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\libs\teobase\src;$(SolutionDir)..\libs\teobase\include;$(SolutionDir)..\libs\teoccl\src;$(SolutionDir)..\libs\teoccl\include;$(SolutionDir)..\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\src\packet.c" />
-    <ClCompile Include="..\..\src\packet_queue.c" />
-    <ClCompile Include="..\..\src\trudp.c" />
-    <ClCompile Include="..\..\src\trudp_channel.c" />
-    <ClCompile Include="..\..\src\trudp_ev.c" />
-    <ClCompile Include="..\..\src\trudp_receive_queue.c" />
-    <ClCompile Include="..\..\src\trudp_send_queue.c" />
-    <ClCompile Include="..\..\src\trudp_stat.c" />
-    <ClCompile Include="..\..\src\trudp_utils.c" />
-    <ClCompile Include="..\..\src\udp.c" />
-    <ClCompile Include="..\..\src\utils.c" />
-    <ClCompile Include="..\..\src\write_queue.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\src\packet.h" />
-    <ClInclude Include="..\..\src\packet_queue.h" />
-    <ClInclude Include="..\..\src\trudp.h" />
-    <ClInclude Include="..\..\src\trudp_api.h" />
-    <ClInclude Include="..\..\src\trudp_channel.h" />
-    <ClInclude Include="..\..\src\trudp_const.h" />
-    <ClInclude Include="..\..\src\trudp_ev.h" />
-    <ClInclude Include="..\..\src\trudp_receive_queue.h" />
-    <ClInclude Include="..\..\src\trudp_send_queue.h" />
-    <ClInclude Include="..\..\src\trudp_stat.h" />
-    <ClInclude Include="..\..\src\trudp_utils.h" />
-    <ClInclude Include="..\..\src\udp.h" />
-    <ClInclude Include="..\..\src\utils.h" />
-    <ClInclude Include="..\..\src\utils_r.h" />
-    <ClInclude Include="..\..\src\write_queue.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
