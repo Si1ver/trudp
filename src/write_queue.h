@@ -34,10 +34,6 @@
 
 #include "teoccl/queue.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #define MAX_HEADER_SIZE 64
 
 typedef struct trudpWriteQueue {
@@ -68,8 +64,8 @@ trudpWriteQueue *trudpWriteQueueNew();
  * @param wq Pointer to trudpWriteQueue
  */
 
-void trudpWriteQueueDestroy(trudpWriteQueue *wq); 
-  
+void trudpWriteQueueDestroy(trudpWriteQueue *wq);
+
 /**
  * Remove all elements from Write queue
  *
@@ -110,9 +106,5 @@ trudpWriteQueueData *trudpWriteQueueGetFirst(trudpWriteQueue *wq);
  */
 
 int trudpWriteQueueDeleteFirst(trudpWriteQueue *wq);
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* WRITE_QUEUE_H */
-

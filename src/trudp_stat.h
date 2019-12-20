@@ -35,10 +35,6 @@
 #include "trudp.h"
 #include "trudp_api.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #define MAX_QUELEN_SHOW 40
 #define NUMBER_CHANNELS_IN_CLI_PAGE 20
 
@@ -49,8 +45,8 @@ typedef enum trudpStatType {
 
 } trudpStatType;
 
-TRUDP_API char *ksnTRUDPstatShowStr(trudpData *td, int page);
-TRUDP_API char *trudpStatShowQueueStr(trudpChannelData *tcd, int type);
+TRUDP_API char* ksnTRUDPstatShowStr(trudpData* td, int page);
+TRUDP_API char* trudpStatShowQueueStr(trudpChannelData* tcd, int type);
 
 /**
  * Reset TR-UDP statistic
@@ -58,8 +54,7 @@ TRUDP_API char *trudpStatShowQueueStr(trudpChannelData *tcd, int type);
  * @param td
  * @return
  */
-static inline
-trudpStatData *trudpStatReset(trudpData *td) {
+static inline trudpStatData* trudpStatReset(trudpData* td) {
     memset(&td->stat, 0, sizeof(td->stat));
     return &td->stat;
 }
@@ -69,8 +64,7 @@ trudpStatData *trudpStatReset(trudpData *td) {
  * @param td
  * @return
  */
-static inline
-trudpStatData *trudpStatInit(trudpData *td) {
+static inline trudpStatData* trudpStatInit(trudpData* td) {
     return trudpStatReset(td);
 }
 /**
@@ -78,8 +72,7 @@ trudpStatData *trudpStatInit(trudpData *td) {
  *
  * @param tcd
  */
-static inline
-void trudpStatChannelReset(trudpChannelData *tcd) {
+static inline void trudpStatChannelReset(trudpChannelData* tcd) {
     memset(&tcd->stat, 0, sizeof(tcd->stat));
     tcd->stat.triptime_min = UINT32_MAX;
     tcd->stat.started = teoGetTimestampFull();
@@ -89,17 +82,13 @@ void trudpStatChannelReset(trudpChannelData *tcd) {
  *
  * @param tcd
  */
-static inline
-void trudpStatChannelInit(trudpChannelData *tcd) {
+static inline void trudpStatChannelInit(trudpChannelData* tcd) {
     trudpStatChannelReset(tcd);
 }
-void trudpStatProcessLast10Send(trudpChannelData *tcd, void *packet, size_t send_data_length);
-void trudpStatProcessLast10Receive(trudpChannelData *tcd, void *packet);
+void trudpStatProcessLast10Send(
+    trudpChannelData* tcd, trudpPacket* packet, size_t send_data_length);
+void trudpStatProcessLast10Receive(trudpChannelData* tcd, trudpPacket* packet);
 
-void *trudpStatGet(trudpData *td, int type, size_t *stat_len);
+void* trudpStatGet(trudpData* td, int type, size_t* stat_len);
 
-#ifdef __cplusplus
-}
 #endif
-
-#endif /* TRU_UDP_STAT_H */

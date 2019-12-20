@@ -27,7 +27,6 @@
  * Created on July 21, 2016, 03:44
  */
 
-
 #ifndef TRUDP_RECEIVE_QUEUE_H
 #define TRUDP_RECEIVE_QUEUE_H
 
@@ -44,24 +43,20 @@ typedef trudpPacketQueue trudpReceiveQueue;
  */
 typedef trudpPacketQueueData trudpReceiveQueueData;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * Create new Receive queue
  *
  * @return Pointer to trudpPacketQueue
  */
 
-trudpReceiveQueue *trudpReceiveQueueNew(); 
+trudpReceiveQueue* trudpReceiveQueueNew();
 /**
  * Destroy Receive queue
  *
  * @param sq Pointer to trudpReceiveQueue
  */
 
-void trudpReceiveQueueDestroy(trudpReceiveQueue *rq); 
+void trudpReceiveQueueDestroy(trudpReceiveQueue* rq);
 /**
  * Remove all elements from Receive queue
  *
@@ -69,7 +64,7 @@ void trudpReceiveQueueDestroy(trudpReceiveQueue *rq);
  * @return Zero at success
  */
 
-int trudpReceiveQueueFree(trudpReceiveQueue *rq);
+int trudpReceiveQueueFree(trudpReceiveQueue* rq);
 /**
  * Get number of elements in Receive queue
  *
@@ -78,7 +73,7 @@ int trudpReceiveQueueFree(trudpReceiveQueue *rq);
  * @return Number of elements in TR-UPD send queue
  */
 
-size_t trudpReceiveQueueSize(trudpReceiveQueue *sq); 
+size_t trudpReceiveQueueSize(trudpReceiveQueue* sq);
 /**
  * Add packet to Receive queue
  *
@@ -90,8 +85,8 @@ size_t trudpReceiveQueueSize(trudpReceiveQueue *sq);
  * @return Pointer to added trudpReceiveQueueData
  */
 
-trudpReceiveQueueData *trudpReceiveQueueAdd(trudpReceiveQueue *sq, void *packet,
-        size_t packet_length, uint64_t expected_time);
+trudpReceiveQueueData* trudpReceiveQueueAdd(
+    trudpReceiveQueue* sq, void* packet, size_t packet_length, uint64_t expected_time);
 /**
  * Remove element from Receive queue
  *
@@ -101,8 +96,7 @@ trudpReceiveQueueData *trudpReceiveQueueAdd(trudpReceiveQueue *sq, void *packet,
  * @return Zero at success
  */
 
-int trudpReceiveQueueDelete(trudpReceiveQueue *tq,
-        trudpReceiveQueueData *tqd);
+int trudpReceiveQueueDelete(trudpReceiveQueue* tq, trudpReceiveQueueData* tqd);
 /**
  * Find Receive queue data by Id
  *
@@ -112,11 +106,6 @@ int trudpReceiveQueueDelete(trudpReceiveQueue *tq,
  * @return Pointer to trudpReceiveQueueData or NULL if not found
  */
 
-trudpReceiveQueueData *trudpReceiveQueueFindById(trudpReceiveQueue *sq,
-        uint32_t id);
-#ifdef __cplusplus
-}
-#endif
+trudpReceiveQueueData* trudpReceiveQueueFindById(trudpReceiveQueue* sq, uint32_t id);
 
 #endif /* TRUDP_RECEIVE_QUEUE_H */
-

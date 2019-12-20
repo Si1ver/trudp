@@ -20,7 +20,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * 
+ *
  * \file   utils.h
  * \author Kirill Scherba <kirill@scherba.ru>
  *
@@ -30,22 +30,14 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include <cstdint>
+
 #include <time.h>
 
 #include "trudp_api.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-char *formatMessage(const char *fmt, ...);
-char *sformatMessage(char *str_to_free, const char *fmt, ...);
-TRUDP_API struct timeval *usecToTv(struct timeval *tv, uint32_t usec);
-
-
-#ifdef __cplusplus
-}
-#endif
+char* formatMessage(const char* fmt, ...);
+char* sformatMessage(char* str_to_free, const char* fmt, ...);
+TRUDP_API struct timeval* usecToTv(struct timeval* tv, uint32_t usec);
 
 #endif /* UTILS_H */
-

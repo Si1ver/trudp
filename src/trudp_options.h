@@ -3,13 +3,7 @@
 #ifndef TRUDP_OPTIONS_H
 #define TRUDP_OPTIONS_H
 
-#include <stdbool.h>
-
 #include "trudp_api.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 // Global options and controls
 
@@ -28,8 +22,4 @@ TRUDP_API void trudpSetOption_DBG_sendto(bool enable);
  */
 TRUDP_API void trudpSetOption_DBG_dumpDataPacketHeaders(bool enable);
 
-#ifdef __cplusplus
-}
 #endif
-
-#endif /* TRUDP_OPTIONS_H */

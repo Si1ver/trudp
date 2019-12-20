@@ -35,7 +35,7 @@
  * @return Pointer to trudpPacketQueue
  */
 
-trudpReceiveQueue *trudpReceiveQueueNew() {
+trudpReceiveQueue* trudpReceiveQueueNew() {
     return trudpPacketQueueNew();
 }
 
@@ -45,8 +45,8 @@ trudpReceiveQueue *trudpReceiveQueueNew() {
  * @param sq Pointer to trudpReceiveQueue
  */
 
-void trudpReceiveQueueDestroy(trudpReceiveQueue *rq) {
-    if(rq) {
+void trudpReceiveQueueDestroy(trudpReceiveQueue* rq) {
+    if (rq) {
         teoQueueDestroy(rq->q);
         free(rq);
     }
@@ -59,7 +59,7 @@ void trudpReceiveQueueDestroy(trudpReceiveQueue *rq) {
  * @return Zero at success
  */
 
-int trudpReceiveQueueFree(trudpReceiveQueue *rq) {
+int trudpReceiveQueueFree(trudpReceiveQueue* rq) {
     return trudpPacketQueueFree(rq);
 }
 
@@ -71,7 +71,7 @@ int trudpReceiveQueueFree(trudpReceiveQueue *rq) {
  * @return Number of elements in TR-UPD send queue
  */
 
-size_t trudpReceiveQueueSize(trudpReceiveQueue *sq) {
+size_t trudpReceiveQueueSize(trudpReceiveQueue* sq) {
     return trudpPacketQueueSize(sq);
 }
 
@@ -86,8 +86,8 @@ size_t trudpReceiveQueueSize(trudpReceiveQueue *sq) {
  * @return Pointer to added trudpReceiveQueueData
  */
 
-trudpReceiveQueueData *trudpReceiveQueueAdd(trudpReceiveQueue *sq, void *packet,
-        size_t packet_length, uint64_t expected_time) {
+trudpReceiveQueueData* trudpReceiveQueueAdd(
+    trudpReceiveQueue* sq, void* packet, size_t packet_length, uint64_t expected_time) {
     return trudpPacketQueueAdd(sq, packet, packet_length, expected_time);
 }
 
@@ -100,8 +100,7 @@ trudpReceiveQueueData *trudpReceiveQueueAdd(trudpReceiveQueue *sq, void *packet,
  * @return Zero at success
  */
 
-int trudpReceiveQueueDelete(trudpReceiveQueue *tq,
-        trudpReceiveQueueData *tqd) {
+int trudpReceiveQueueDelete(trudpReceiveQueue* tq, trudpReceiveQueueData* tqd) {
     return trudpPacketQueueDelete(tq, tqd);
 }
 
@@ -114,9 +113,6 @@ int trudpReceiveQueueDelete(trudpReceiveQueue *tq,
  * @return Pointer to trudpReceiveQueueData or NULL if not found
  */
 
-trudpReceiveQueueData *trudpReceiveQueueFindById(trudpReceiveQueue *sq,
-        uint32_t id) {
+trudpReceiveQueueData* trudpReceiveQueueFindById(trudpReceiveQueue* sq, uint32_t id) {
     return trudpPacketQueueFindById(sq, id);
 }
-
-

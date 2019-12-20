@@ -57,17 +57,17 @@
     <ClCompile Include="..\..\libs\teoccl\src\teoccl\map.c" />
     <ClCompile Include="..\..\libs\teoccl\src\teoccl\memory.c" />
     <ClCompile Include="..\..\libs\teoccl\src\teoccl\queue.c" />
-    <ClCompile Include="..\..\src\packet.c" />
-    <ClCompile Include="..\..\src\packet_queue.c" />
-    <ClCompile Include="..\..\src\trudp.c" />
-    <ClCompile Include="..\..\src\trudp_channel.c" />
-    <ClCompile Include="..\..\src\trudp_options.c" />
-    <ClCompile Include="..\..\src\trudp_receive_queue.c" />
-    <ClCompile Include="..\..\src\trudp_send_queue.c" />
-    <ClCompile Include="..\..\src\trudp_stat.c" />
-    <ClCompile Include="..\..\src\trudp_utils.c" />
-    <ClCompile Include="..\..\src\udp.c" />
-    <ClCompile Include="..\..\src\write_queue.c" />
+    <ClCompile Include="..\..\src\packet.cpp" />
+    <ClCompile Include="..\..\src\packet_queue.cpp" />
+    <ClCompile Include="..\..\src\trudp.cpp" />
+    <ClCompile Include="..\..\src\trudp_channel.cpp" />
+    <ClCompile Include="..\..\src\trudp_options.cpp" />
+    <ClCompile Include="..\..\src\trudp_receive_queue.cpp" />
+    <ClCompile Include="..\..\src\trudp_send_queue.cpp" />
+    <ClCompile Include="..\..\src\trudp_stat.cpp" />
+    <ClCompile Include="..\..\src\trudp_utils.cpp" />
+    <ClCompile Include="..\..\src\udp.cpp" />
+    <ClCompile Include="..\..\src\write_queue.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

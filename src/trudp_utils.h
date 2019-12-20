@@ -37,22 +37,14 @@
 #include <sys/time.h>
 #endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-char *trudpMakeKey(char *addr, int port, int channel, size_t *key_length);
-char *formatMessage(const char *fmt, ...);
-char *sformatMessage(char *str_to_free, const char *fmt, ...);
-struct timeval *usecToTv(struct timeval *tv, uint32_t usec);
+char* trudpMakeKey(char* addr, int port, int channel, size_t* key_length);
+char* formatMessage(const char* fmt, ...);
+char* sformatMessage(char* str_to_free, const char* fmt, ...);
+struct timeval* usecToTv(struct timeval* tv, uint32_t usec);
 
 /// modular addition    for unsigneds by mod M ( returns (arg_a+arg_b) mod mod_ in range 0...mod_-1 )
 uint64_t modAddU(uint64_t arg_a, uint64_t arg_b, uint64_t mod_);
 /// modular subtraction for unsigneds by mod M ( returns (arg_a-arg_b) mod mod_ in range 0...mod_-1 )
 uint64_t modSubU(uint64_t arg_a, uint64_t arg_b, uint64_t mod_);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* TRUDP_UTILS_H */

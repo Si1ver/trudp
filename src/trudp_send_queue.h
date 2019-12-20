@@ -35,10 +35,6 @@
 
 #include "packet_queue.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * Send queue type
  */
@@ -55,7 +51,7 @@ typedef trudpPacketQueueData trudpSendQueueData;
  * @return Pointer to trudpSendQueue
  */
 
-trudpSendQueue *trudpSendQueueNew();
+trudpSendQueue* trudpSendQueueNew();
 /**
  * Remove all elements from Send queue
  *
@@ -63,14 +59,14 @@ trudpSendQueue *trudpSendQueueNew();
  * @return Zero at success
  */
 
-int trudpSendQueueFree(trudpSendQueue *sq);
+int trudpSendQueueFree(trudpSendQueue* sq);
 /**
  * Destroy Send queue
  *
  * @param sq Pointer to Send Queue (trudpSendQueue)
  */
 
-void trudpSendQueueDestroy(trudpSendQueue *sq);
+void trudpSendQueueDestroy(trudpSendQueue* sq);
 /**
  * Get number of elements in Send queue
  *
@@ -79,7 +75,7 @@ void trudpSendQueueDestroy(trudpSendQueue *sq);
  * @return Number of elements in TR-UPD send queue
  */
 
-size_t trudpSendQueueSize(trudpSendQueue *sq); 
+size_t trudpSendQueueSize(trudpSendQueue* sq);
 /**
  * Add packet to Send queue
  *
@@ -91,8 +87,8 @@ size_t trudpSendQueueSize(trudpSendQueue *sq);
  * @return Pointer to added trudpSendQueueData
  */
 
-trudpSendQueueData *trudpSendQueueAdd(trudpSendQueue *sq, void *packet,
-        size_t packet_length, uint64_t expected_time);
+trudpSendQueueData* trudpSendQueueAdd(
+    trudpSendQueue* sq, void* packet, size_t packet_length, uint64_t expected_time);
 /**
  * Remove element from Send queue
  *
@@ -102,7 +98,7 @@ trudpSendQueueData *trudpSendQueueAdd(trudpSendQueue *sq, void *packet,
  * @return Zero at success
  */
 
-int trudpSendQueueDelete(trudpSendQueue *sq, trudpSendQueueData *sqd); 
+int trudpSendQueueDelete(trudpSendQueue* sq, trudpSendQueueData* sqd);
 /**
  * Find Send queue data by Id
  *
@@ -112,7 +108,7 @@ int trudpSendQueueDelete(trudpSendQueue *sq, trudpSendQueueData *sqd);
  * @return Pointer to trudpSendQueueData or NULL if not found
  */
 
-trudpSendQueueData *trudpSendQueueFindById(trudpSendQueue *sq, uint32_t id); 
+trudpSendQueueData* trudpSendQueueFindById(trudpSendQueue* sq, uint32_t id);
 /**
  * Get first element from Send Queue
  *
@@ -121,12 +117,8 @@ trudpSendQueueData *trudpSendQueueFindById(trudpSendQueue *sq, uint32_t id);
  * @return Pointer to trudpSendQueueData or NULL if not found
  */
 
-trudpSendQueueData *trudpSendQueueGetFirst(trudpSendQueue *sq);
+trudpSendQueueData* trudpSendQueueGetFirst(trudpSendQueue* sq);
 
-uint32_t trudpSendQueueGetTimeout(trudpSendQueue *sq, uint64_t current_t);
-
-#ifdef __cplusplus
-}
-#endif
+uint32_t trudpSendQueueGetTimeout(trudpSendQueue* sq, uint64_t current_t);
 
 #endif /* TRUDP_SEND_QUEUE_H */

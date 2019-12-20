@@ -134,37 +134,37 @@
     <ClCompile Include="..\..\libs\teobase\src\teobase\time.c">
       <Filter>teobase\src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\packet.c">
+    <ClCompile Include="..\..\src\udp.cpp">
       <Filter>trudp</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\packet_queue.c">
+    <ClCompile Include="..\..\src\trudp_options.cpp">
       <Filter>trudp</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\trudp.c">
+    <ClCompile Include="..\..\src\trudp_channel.cpp">
       <Filter>trudp</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\trudp_channel.c">
+    <ClCompile Include="..\..\src\packet_queue.cpp">
       <Filter>trudp</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\trudp_options.c">
+    <ClCompile Include="..\..\src\packet.cpp">
       <Filter>trudp</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\trudp_receive_queue.c">
+    <ClCompile Include="..\..\src\trudp_receive_queue.cpp">
       <Filter>trudp</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\trudp_send_queue.c">
+    <ClCompile Include="..\..\src\trudp_send_queue.cpp">
       <Filter>trudp</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\trudp_stat.c">
+    <ClCompile Include="..\..\src\trudp_stat.cpp">
       <Filter>trudp</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\trudp_utils.c">
+    <ClCompile Include="..\..\src\trudp_utils.cpp">
       <Filter>trudp</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\udp.c">
+    <ClCompile Include="..\..\src\write_queue.cpp">
       <Filter>trudp</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\write_queue.c">
+    <ClCompile Include="..\..\src\trudp.cpp">
       <Filter>trudp</Filter>
     </ClCompile>
   </ItemGroup>

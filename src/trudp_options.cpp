@@ -1,6 +1,5 @@
 #include "trudp_options.h"
 
-#include <stdbool.h>
 #include <stdint.h>
 
 extern bool trudpOpt_DBG_sendto;
