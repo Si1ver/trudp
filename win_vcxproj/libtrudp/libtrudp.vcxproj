@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\include\trudppp\constants.hpp" />
     <ClInclude Include="..\..\include\trudppp\packet.hpp" />
     <ClInclude Include="..\..\libs\teobase\include\teobase\api.h" />
     <ClInclude Include="..\..\libs\teobase\include\teobase\logging.h" />
@@ -35,6 +36,7 @@
     <ClInclude Include="..\..\src\packet.h" />
     <ClInclude Include="..\..\src\packet_queue.h" />
     <ClInclude Include="..\..\src\trudp.h" />
+    <ClInclude Include="..\..\src\trudppp\serialized_packet.hpp" />
     <ClInclude Include="..\..\src\trudp_api.h" />
     <ClInclude Include="..\..\src\trudp_channel.h" />
     <ClInclude Include="..\..\src\trudp_const.h" />
@@ -62,6 +64,7 @@
     <ClCompile Include="..\..\src\packet_queue.cpp" />
     <ClCompile Include="..\..\src\trudp.cpp" />
     <ClCompile Include="..\..\src\trudppp\packet.cpp" />
+    <ClCompile Include="..\..\src\trudppp\serialized_packet.cpp" />
     <ClCompile Include="..\..\src\trudp_channel.cpp" />
     <ClCompile Include="..\..\src\trudp_options.cpp" />
     <ClCompile Include="..\..\src\trudp_receive_queue.cpp" />

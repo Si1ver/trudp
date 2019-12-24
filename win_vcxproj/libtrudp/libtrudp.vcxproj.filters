@@ -117,6 +117,12 @@
     <ClInclude Include="..\..\include\trudppp\packet.hpp">
       <Filter>trudppp\include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\trudppp\constants.hpp">
+      <Filter>trudppp\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\trudppp\serialized_packet.hpp">
+      <Filter>trudppp\src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\libs\teoccl\src\teoccl\array_list.c">
@@ -181,6 +187,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\packet_legacy.cpp">
       <Filter>trudp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\trudppp\serialized_packet.cpp">
+      <Filter>trudppp\src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
