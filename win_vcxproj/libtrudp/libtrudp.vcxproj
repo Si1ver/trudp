@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\include\trudppp\packet.hpp" />
     <ClInclude Include="..\..\libs\teobase\include\teobase\api.h" />
     <ClInclude Include="..\..\libs\teobase\include\teobase\logging.h" />
     <ClInclude Include="..\..\libs\teobase\include\teobase\mutex.h" />
@@ -57,9 +58,10 @@
     <ClCompile Include="..\..\libs\teoccl\src\teoccl\map.c" />
     <ClCompile Include="..\..\libs\teoccl\src\teoccl\memory.c" />
     <ClCompile Include="..\..\libs\teoccl\src\teoccl\queue.c" />
-    <ClCompile Include="..\..\src\packet.cpp" />
+    <ClCompile Include="..\..\src\packet_legacy.cpp" />
     <ClCompile Include="..\..\src\packet_queue.cpp" />
     <ClCompile Include="..\..\src\trudp.cpp" />
+    <ClCompile Include="..\..\src\trudppp\packet.cpp" />
     <ClCompile Include="..\..\src\trudp_channel.cpp" />
     <ClCompile Include="..\..\src\trudp_options.cpp" />
     <ClCompile Include="..\..\src\trudp_receive_queue.cpp" />
@@ -127,7 +129,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\libs\teobase\src;$(SolutionDir)..\libs\teobase\include;$(SolutionDir)..\libs\teoccl\src;$(SolutionDir)..\libs\teoccl\include;$(SolutionDir)..\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\libs\teobase\src;$(SolutionDir)..\libs\teobase\include;$(SolutionDir)..\libs\teoccl\src;$(SolutionDir)..\libs\teoccl\include;$(SolutionDir)..\src;$(SolutionDir)..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
   </ItemDefinitionGroup>
@@ -137,7 +139,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\libs\teobase\src;$(SolutionDir)..\libs\teobase\include;$(SolutionDir)..\libs\teoccl\src;$(SolutionDir)..\libs\teoccl\include;$(SolutionDir)..\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\libs\teobase\src;$(SolutionDir)..\libs\teobase\include;$(SolutionDir)..\libs\teoccl\src;$(SolutionDir)..\libs\teoccl\include;$(SolutionDir)..\src;$(SolutionDir)..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
   </ItemDefinitionGroup>
@@ -149,7 +151,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\libs\teobase\src;$(SolutionDir)..\libs\teobase\include;$(SolutionDir)..\libs\teoccl\src;$(SolutionDir)..\libs\teoccl\include;$(SolutionDir)..\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\libs\teobase\src;$(SolutionDir)..\libs\teobase\include;$(SolutionDir)..\libs\teoccl\src;$(SolutionDir)..\libs\teoccl\include;$(SolutionDir)..\src;$(SolutionDir)..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -165,7 +167,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\libs\teobase\src;$(SolutionDir)..\libs\teobase\include;$(SolutionDir)..\libs\teoccl\src;$(SolutionDir)..\libs\teoccl\include;$(SolutionDir)..\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\libs\teobase\src;$(SolutionDir)..\libs\teobase\include;$(SolutionDir)..\libs\teoccl\src;$(SolutionDir)..\libs\teoccl\include;$(SolutionDir)..\src;$(SolutionDir)..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>

@@ -22,6 +22,15 @@
     <Filter Include="trudp">
       <UniqueIdentifier>{e724b954-244b-442f-b774-b5e4f63f3473}</UniqueIdentifier>
     </Filter>
+    <Filter Include="trudppp">
+      <UniqueIdentifier>{84a88024-f6c8-49ad-86e6-13d12b2693b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="trudppp\include">
+      <UniqueIdentifier>{a61211eb-27c6-4aa0-a1c9-1479e2f61a32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="trudppp\src">
+      <UniqueIdentifier>{fc447715-a078-497c-8145-f150fdc9dd6e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\libs\teoccl\include\teoccl\array_list.h">
@@ -105,6 +114,9 @@
     <ClInclude Include="..\..\src\write_queue.h">
       <Filter>trudp</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\trudppp\packet.hpp">
+      <Filter>trudppp\include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\libs\teoccl\src\teoccl\array_list.c">
@@ -146,9 +158,6 @@
     <ClCompile Include="..\..\src\packet_queue.cpp">
       <Filter>trudp</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\packet.cpp">
-      <Filter>trudp</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\trudp_receive_queue.cpp">
       <Filter>trudp</Filter>
     </ClCompile>
@@ -165,6 +174,12 @@
       <Filter>trudp</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\trudp.cpp">
+      <Filter>trudp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\trudppp\packet.cpp">
+      <Filter>trudppp\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\packet_legacy.cpp">
       <Filter>trudp</Filter>
     </ClCompile>
   </ItemGroup>

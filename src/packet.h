@@ -37,6 +37,8 @@
 
 #include "trudp_api.h"
 
+#include "trudppp/packet.hpp"
+
 // TR-UDP Protocol constants
 #define TR_UDP_PROTOCOL_VERSION 2
 #define MIN_ACK_WAIT 0.000732                  // 000.732 MS
@@ -56,32 +58,8 @@
 
 typedef struct trudpPacket trudpPacket;
 
-namespace trudppp {
-/**
- * TR-UDP message type
- */
-enum class PacketType {
-    Data = 0, ///< #0 The DATA messages are carrying payload. (has payload)
-    /**
-     * #1
-     * The ACK messages are used to acknowledge the arrival of the DATA and
-     * RESET messages. (has not payload)
-     */
-    Ack = 1,
-    Reset = 2,         ///< #2 The RESET messages reset messages counter. (has not
-                       ///< payload)
-    AckOnReset = 3, ///< #3 = TRU_ACK | TRU_RESET: ACK for RESET. (has not
-                       ///< payload)
-    Ping = 4,          ///< #4 PING The DATA messages can carrying payload, does not sent
-                       ///< to User level as DATA received. (payload allowed)
-    AckOnPing = 5,       ///< #5 = TRU_ACK | TRU_PING: ACK for PING (payload allowed)
-};
-}
-
 TRUDP_API uint32_t trudpGetTimestamp();
 TRUDP_API uint32_t trudpPacketGetId(trudpPacket* packet);
-// This is dangerous and should not be used.
-// TRUDP_API void *trudpPacketGetPacket(void *data);
 TRUDP_API trudppp::PacketType trudpPacketGetType(trudpPacket* packet);
 TRUDP_API size_t trudpPacketGetPacketLength(trudpPacket* packet);
 
