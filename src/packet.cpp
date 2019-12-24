@@ -26,10 +26,10 @@
  * TR-UDP Header and Packet functions module
  */
 
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
+#include <cstdint>
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
 
 #include "packet.h"
 
@@ -83,7 +83,7 @@ static void _trudpHeaderACKtoPINGcreate(
 static uint8_t _trudpHeaderChecksumCalculate(trudpHeader* th);
 static int _trudpHeaderChecksumCheck(trudpHeader* th);
 static inline void _trudpHeaderChecksumSet(trudpHeader* th, uint8_t chk);
-static void _trudpHeaderCreate(trudpHeader* th, uint32_t id, unsigned int message_type,
+static void _trudpHeaderCreate(trudpHeader* th, uint32_t id, trudppp::PacketType message_type,
     unsigned int channel, uint16_t payload_length, uint32_t timestamp);
 static void _trudpHeaderDATAcreate(
     trudpPacket* packet, uint32_t id, unsigned int channel, void* data, size_t data_length);
@@ -92,7 +92,7 @@ static void _trudpHeaderPINGcreate(
 static void _trudpHeaderRESETcreate(trudpPacket* packet, uint32_t id, unsigned int channel);
 static inline int _trudpPacketGetChannel(trudpPacket* packet);
 static inline void _trudpPacketSetChannel(trudpPacket* packet, int channel);
-static inline void _trudpPacketSetType(trudpPacket* packet, trudpPacketType message_type);
+static inline void _trudpPacketSetType(trudpPacket* packet, trudppp::PacketType message_type);
 static inline trudpHeader* _trudpPacketGetHeader(trudpPacket* packet);
 
 /*****************************************************************************
@@ -180,10 +180,10 @@ static inline trudpHeader* _trudpPacketGetHeader(trudpPacket* packet) {
  * @param payload_length Number of bytes in the package payload
  * @param timestamp Sending time of DATA or RESET messages
  */
-static void _trudpHeaderCreate(trudpHeader* th, uint32_t id, unsigned int message_type,
+static void _trudpHeaderCreate(trudpHeader* th, uint32_t id, trudppp::PacketType message_type,
     unsigned int channel, uint16_t payload_length, uint32_t timestamp) {
     th->id = id;
-    th->message_type = message_type;
+    th->message_type = static_cast<int>(message_type);
     th->channel = channel;
     th->payload_length = payload_length;
     th->timestamp = timestamp; // trudpHeaderTimestamp();
@@ -210,7 +210,8 @@ void trudpPacketUpdateTimestamp(trudpPacket* packet) {
  * @param in_th Input buffer with received TR-UDP package (header)
  */
 static void _trudpHeaderACKcreate(trudpHeader* out_th, trudpHeader* in_th) {
-    _trudpHeaderCreate(out_th, in_th->id, TRU_ACK, in_th->channel, 0, in_th->timestamp);
+    _trudpHeaderCreate(
+        out_th, in_th->id, trudppp::PacketType::Ack, in_th->channel, 0, in_th->timestamp);
 }
 
 /**
@@ -220,7 +221,7 @@ static void _trudpHeaderACKcreate(trudpHeader* out_th, trudpHeader* in_th) {
  * @param in_th Input buffer with received TR-UDP package (header)
  */
 static void _trudpHeaderACKtoRESETcreate(trudpHeader* out_th, trudpHeader* in_th) {
-    _trudpHeaderCreate(out_th, in_th->id, TRU_ACK | TRU_RESET, in_th->channel, 0, in_th->timestamp);
+    _trudpHeaderCreate(out_th, in_th->id, trudppp::PacketType::AckOnReset, in_th->channel, 0, in_th->timestamp);
 }
 
 /**
@@ -233,8 +234,8 @@ static void _trudpHeaderACKtoPINGcreate(
     trudpPacket* packet, trudpHeader* in_th, void* data, size_t data_length) {
     trudpHeader* packet_header = _trudpPacketGetHeader(packet);
 
-    _trudpHeaderCreate(packet_header, in_th->id, TRU_ACK | TRU_PING, in_th->channel,
-        in_th->payload_length, in_th->timestamp);
+    _trudpHeaderCreate(packet_header, in_th->id, trudppp::PacketType::AckOnPing,
+        in_th->channel, in_th->payload_length, in_th->timestamp);
 
     if (data != NULL && data_length != 0) {
         void* packet_data = trudpPacketGetData(packet);
@@ -251,7 +252,8 @@ static void _trudpHeaderACKtoPINGcreate(
 static void _trudpHeaderRESETcreate(trudpPacket* packet, uint32_t id, unsigned int channel) {
     trudpHeader* packet_header = _trudpPacketGetHeader(packet);
 
-    _trudpHeaderCreate(packet_header, id, TRU_RESET, channel, 0, trudpGetTimestamp());
+    _trudpHeaderCreate(
+        packet_header, id, trudppp::PacketType::Reset, channel, 0, trudpGetTimestamp());
 }
 
 /**
@@ -264,7 +266,8 @@ static void _trudpHeaderDATAcreate(
     trudpPacket* packet, uint32_t id, unsigned int channel, void* data, size_t data_length) {
     trudpHeader* packet_header = _trudpPacketGetHeader(packet);
 
-    _trudpHeaderCreate(packet_header, id, TRU_DATA, channel, data_length, trudpGetTimestamp());
+    _trudpHeaderCreate(
+        packet_header, id, trudppp::PacketType::Data, channel, data_length, trudpGetTimestamp());
 
     if (data != NULL && data_length != 0) {
         void* packet_data = trudpPacketGetData(packet);
@@ -282,7 +285,8 @@ static void _trudpHeaderPINGcreate(
     trudpPacket* packet, uint32_t id, unsigned int channel, void* data, size_t data_length) {
     trudpHeader* packet_header = _trudpPacketGetHeader(packet);
 
-    _trudpHeaderCreate(packet_header, id, TRU_PING, channel, data_length, trudpGetTimestamp());
+    _trudpHeaderCreate(
+        packet_header, id, trudppp::PacketType::Ping, channel, data_length, trudpGetTimestamp());
 
     if (data != NULL && data_length != 0) {
         void* packet_data = trudpPacketGetData(packet);
@@ -570,9 +574,9 @@ size_t trudpPacketGetPacketLength(trudpPacket* packet) {
  * @return Message type could be of type:
  *  DATA(0x0), ACK(0x1), RESET(0x2), ACK_RESET(0x3), PING(0x4), ACK_PING(0x5)
  */
-trudpPacketType trudpPacketGetType(trudpPacket* packet) {
+trudppp::PacketType trudpPacketGetType(trudpPacket* packet) {
     trudpHeader* packet_header = _trudpPacketGetHeader(packet);
-    return static_cast<trudpPacketType>(packet_header->message_type);
+    return static_cast<trudppp::PacketType>(packet_header->message_type);
 }
 
 /**
@@ -581,9 +585,9 @@ trudpPacketType trudpPacketGetType(trudpPacket* packet) {
  * @param packet Pointer to packet
  * @param message_type
  */
-static inline void _trudpPacketSetType(trudpPacket* packet, trudpPacketType message_type) {
+static inline void _trudpPacketSetType(trudpPacket* packet, trudppp::PacketType message_type) {
     trudpHeader* packet_header = _trudpPacketGetHeader(packet);
-    packet_header->message_type = message_type;
+    packet_header->message_type = static_cast<int>(message_type);
 }
 
 /**
@@ -603,24 +607,24 @@ void trudpPacketHeaderDump(char* buffer, size_t buffer_len, trudpPacket* packet)
         "checksum=%u, version=%u, message_type=%s (%u), channel=%u, "
         "payload_length=%u, id=%u, timestamp=%u\n",
         (uint32_t)header->checksum, (uint32_t)header->version,
-        STRING_trudpPacketType((trudpPacketType)header->message_type),
+        STRING_trudpPacketType((trudppp::PacketType)header->message_type),
         (uint32_t)header->message_type, (uint32_t)header->channel, (uint32_t)header->payload_length,
         (uint32_t)header->id, (uint32_t)header->timestamp);
 }
 
-const char* STRING_trudpPacketType(trudpPacketType value) {
+const char* STRING_trudpPacketType(trudppp::PacketType value) {
     switch (value) {
-        case TRU_DATA:
+        case trudppp::PacketType::Data:
             return "TRU_DATA";
-        case TRU_ACK:
+        case trudppp::PacketType::Ack:
             return "TRU_ACK";
-        case TRU_RESET:
+        case trudppp::PacketType::Reset:
             return "TRU_RESET";
-        case TRU_ACK_TRU_RESET:
+        case trudppp::PacketType::AckOnReset:
             return "TRU_ACK_TRU_RESET";
-        case TRU_PING:
+        case trudppp::PacketType::Ping:
             return "TRU_PING";
-        case TRU_ACK_PING:
+        case trudppp::PacketType::AckOnPing:
             return "TRU_ACK_PING";
         default:
             break;

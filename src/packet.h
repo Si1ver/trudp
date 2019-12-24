@@ -32,8 +32,8 @@
 #ifndef PACKET_H
 #define PACKET_H
 
-#include <stdint.h>
-#include <stddef.h>
+#include <cstdint>
+#include <cstddef>
 
 #include "trudp_api.h"
 
@@ -56,33 +56,33 @@
 
 typedef struct trudpPacket trudpPacket;
 
+namespace trudppp {
 /**
  * TR-UDP message type
  */
-typedef enum trudpPacketType {
-
-    TRU_DATA, ///< #0 The DATA messages are carrying payload. (has payload)
+enum class PacketType {
+    Data = 0, ///< #0 The DATA messages are carrying payload. (has payload)
     /**
      * #1
      * The ACK messages are used to acknowledge the arrival of the DATA and
      * RESET messages. (has not payload)
      */
-    TRU_ACK,
-    TRU_RESET,         ///< #2 The RESET messages reset messages counter. (has not
+    Ack = 1,
+    Reset = 2,         ///< #2 The RESET messages reset messages counter. (has not
                        ///< payload)
-    TRU_ACK_TRU_RESET, ///< #3 = TRU_ACK | TRU_RESET: ACK for RESET. (has not
+    AckOnReset = 3, ///< #3 = TRU_ACK | TRU_RESET: ACK for RESET. (has not
                        ///< payload)
-    TRU_PING,          ///< #4 PING The DATA messages can carrying payload, does not sent
+    Ping = 4,          ///< #4 PING The DATA messages can carrying payload, does not sent
                        ///< to User level as DATA received. (payload allowed)
-    TRU_ACK_PING       ///< #5 = TRU_ACK | TRU_PING: ACK for PING (payload allowed)
-
-} trudpPacketType;
+    AckOnPing = 5,       ///< #5 = TRU_ACK | TRU_PING: ACK for PING (payload allowed)
+};
+}
 
 TRUDP_API uint32_t trudpGetTimestamp();
 TRUDP_API uint32_t trudpPacketGetId(trudpPacket* packet);
 // This is dangerous and should not be used.
 // TRUDP_API void *trudpPacketGetPacket(void *data);
-TRUDP_API trudpPacketType trudpPacketGetType(trudpPacket* packet);
+TRUDP_API trudppp::PacketType trudpPacketGetType(trudpPacket* packet);
 TRUDP_API size_t trudpPacketGetPacketLength(trudpPacket* packet);
 
 TRUDP_API uint64_t teoGetTimestampFull();
@@ -106,6 +106,6 @@ trudpPacket* trudpPacketRESETcreateNew(uint32_t id, unsigned int channel);
 size_t trudpPacketRESETlength();
 TRUDP_API void trudpPacketHeaderDump(char* buffer, size_t buffer_len, trudpPacket* packet);
 
-const char* STRING_trudpPacketType(trudpPacketType value);
+const char* STRING_trudpPacketType(trudppp::PacketType value);
 
 #endif

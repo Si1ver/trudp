@@ -581,10 +581,10 @@ void* trudpChannelProcessReceivedPacket(
     // Check and process TR-UDP packet
     if (packet != NULL) {
         // Check packet type
-        int type = trudpPacketGetType(packet);
+        trudppp::PacketType type = trudpPacketGetType(packet);
         switch (type) {
             // ACK to DATA packet received
-            case TRU_ACK: {
+            case trudppp::PacketType::Ack: {
                 // Find packet in send queue by id
                 size_t send_data_length = 0;
                 trudpSendQueueData* sqd =
@@ -616,7 +616,7 @@ void* trudpChannelProcessReceivedPacket(
             } break;
 
             // ACK to RESET packet received
-            case TRU_ACK | TRU_RESET: {
+            case trudppp::PacketType::AckOnReset: {
                 // Send event
                 trudpSendEvent(tcd, GOT_ACK_RESET, NULL, 0, NULL);
 
@@ -630,7 +630,7 @@ void* trudpChannelProcessReceivedPacket(
             } break;
 
             // ACK to PING packet received
-            case TRU_ACK | TRU_PING: /*TRU_ACK_PING:*/ {
+            case trudppp::PacketType::AckOnPing: {
                 // Calculate Triptime
                 _trudpChannelCalculateTriptime(tcd, packet, packet_length);
                 _trudpChannelSetLastReceived(tcd);
@@ -642,7 +642,7 @@ void* trudpChannelProcessReceivedPacket(
             } break;
 
             // PING packet received
-            case TRU_PING: {
+            case trudppp::PacketType::Ping: {
                 // Send event
                 trudpSendEvent(tcd, GOT_PING, trudpPacketGetData(packet),
                     trudpPacketGetDataLength(packet), NULL);
@@ -662,7 +662,7 @@ void* trudpChannelProcessReceivedPacket(
             } break;
 
             // DATA packet received
-            case TRU_DATA: {
+            case trudppp::PacketType::Data: {
                 // Create ACK packet and send it back to sender
                 _trudpChannelSendACK(tcd, packet);
 
@@ -741,7 +741,7 @@ void* trudpChannelProcessReceivedPacket(
             } break;
 
             // RESET packet received
-            case TRU_RESET: {
+            case trudppp::PacketType::Reset: {
                 //                log_info("TrUdp", "trudpSendEvent GOT_RESET in
                 //                trudpChannelProcessReceivedPacket");
 

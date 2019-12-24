@@ -193,8 +193,8 @@ int trudpIsPacketPing(uint8_t* data, size_t packet_length) {
     trudpPacket* packet = trudpPacketCheck(data, packet_length);
 
     if (packet != nullptr) {
-        int packet_type = trudpPacketGetType(packet);
-        if (packet_type == TRU_PING) {
+        trudppp::PacketType packet_type = trudpPacketGetType(packet);
+        if (packet_type == trudppp::PacketType::Ping) {
             return 1;
         }
     }
