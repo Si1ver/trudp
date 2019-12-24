@@ -79,3 +79,6 @@ ipch/
 *.VC.db
 *.VC.VC.opendb
 /examples/trudpcat_ev_wq
+
+/.vscode/**
+/bazel-*/**
