@@ -11,9 +11,13 @@ cc_library(
     }),
     deps = ["@teobase//:teobase", "@teoccl//:teoccl"],
     srcs = [
+        "src/trudppp/callbacks.cpp",
+        "src/trudppp/channel.cpp",
+        "src/trudppp/connection.cpp",
         "src/trudppp/packet.cpp",
         "src/trudppp/serialized_packet.cpp",
         "src/trudppp/serialized_packet.hpp",
+        "src/trudppp/service.cpp",
         "src/packet.h",
         "src/packet_legacy.cpp",
         "src/packet_queue.cpp",
@@ -44,10 +48,42 @@ cc_library(
         "src/write_queue.h",
     ],
     hdrs = [
+        "include/trudppp/callbacks.hpp",
+        "include/trudppp/channel.hpp",
+        "include/trudppp/connection.hpp",
         "include/trudppp/constants.hpp",
         "include/trudppp/packet.hpp",
+        "include/trudppp/service.hpp",
     ],
     includes = ["include", "src"],
+)
+
+cc_test(
+    name = "include_channel_test",
+    copts = select({
+        ":windows": ["/std:c++17"],
+        "//conditions:default": ["-std=c++17"],
+    }),
+    deps = [":trudppp", "@teobase//:teobase", "@teoccl//:teoccl"],
+    linkopts = select({
+        ":windows": [],
+        "//conditions:default": ["-pthread"],
+    }),
+    srcs = ["tests/header_inclusion/include_channel_hpp.cpp"],
+)
+
+cc_test(
+    name = "include_connection_test",
+    copts = select({
+        ":windows": ["/std:c++17"],
+        "//conditions:default": ["-std=c++17"],
+    }),
+    deps = [":trudppp", "@teobase//:teobase", "@teoccl//:teoccl"],
+    linkopts = select({
+        ":windows": [],
+        "//conditions:default": ["-pthread"],
+    }),
+    srcs = ["tests/header_inclusion/include_connection_hpp.cpp"],
 )
 
 cc_test(
@@ -91,6 +127,7 @@ cc_test(
     }),
     srcs = [
         "tests/packet/packet_serialization.cpp",
+        "tests/connection/connection_events.cpp",
         "src/trudppp/serialized_packet.hpp",
     ],
     includes = ["src"],

@@ -123,6 +123,18 @@
     <ClInclude Include="..\..\src\trudppp\serialized_packet.hpp">
       <Filter>trudppp\src</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\trudppp\connection.hpp">
+      <Filter>trudppp\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\trudppp\channel.hpp">
+      <Filter>trudppp\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\trudppp\callbacks.hpp">
+      <Filter>trudppp\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\trudppp\service.hpp">
+      <Filter>trudppp\include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\libs\teoccl\src\teoccl\array_list.c">
@@ -189,6 +201,18 @@
       <Filter>trudp</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\trudppp\serialized_packet.cpp">
+      <Filter>trudppp\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\trudppp\connection.cpp">
+      <Filter>trudppp\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\trudppp\channel.cpp">
+      <Filter>trudppp\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\trudppp\callbacks.cpp">
+      <Filter>trudppp\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\trudppp\service.cpp">
       <Filter>trudppp\src</Filter>
     </ClCompile>
   </ItemGroup>

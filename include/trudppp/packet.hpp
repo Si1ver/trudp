@@ -36,6 +36,10 @@ namespace trudppp {
         /// The moment of time when the packet was sent.
         std::chrono::system_clock::time_point timestamp;
 
+        Packet(const Packet&) = delete;
+
+        Packet& operator=(const Packet&) = delete;
+
     public:
         Packet() : type(PacketType::Data), channel_number(0), id(0) {}
 
@@ -44,7 +48,9 @@ namespace trudppp {
             : type(type), channel_number(channel_number), id(id), data(data), timestamp(timestamp) {
         }
 
-        // TODO: copy constructors and assignment.
+        Packet(Packet&& other) noexcept
+            : type(other.type), channel_number(other.channel_number), id(other.id),
+              data(std::move(other.data)), timestamp(other.timestamp) {}
 
         inline PacketType GetType() const { return type; }
 
