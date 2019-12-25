@@ -1,0 +1,30 @@
+trigger:
+- 'feature/trudppp'
+
+jobs:
+- job: test_linux_bazel
+  pool:
+    vmImage: 'ubuntu-18.04'
+  steps:
+  - checkout: self
+    submodules: false
+  - bash: |
+      curl https://bazel.build/bazel-release.pub.gpg | sudo apt-key add -
+      echo "deb [arch=amd64] https://storage.googleapis.com/bazel-apt stable jdk1.8" | sudo tee /etc/apt/sources.list.d/bazel.list
+      sudo apt update && sudo apt install -y bazel
+  - bash: |
+      bazel version
+      bazel test ...
+- job: test_windows_x86_64_bazel
+  pool:
+    vmImage: 'windows-2019'
+  variables:
+    bazel.vs: 'C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise'
+  steps:
+  - checkout: self
+    submodules: false
+  - powershell: |
+      (New-Object System.Net.WebClient).DownloadFile("https://github.com/bazelbuild/bazel/releases/download/2.0.0/bazel-2.0.0-windows-x86_64.exe", "bazel.exe") 
+  - script: |
+      bazel version
+      bazel test ...
