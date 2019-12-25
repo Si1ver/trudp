@@ -69,12 +69,8 @@ trudpData* trudpInit(int fd, int port, trudpEventCb event_cb, void* user_data) {
     // Set event callback
     trudp->evendCb = event_cb;
 
-    // Set trudpData label
-    trudp->trudp_data_label[0] = 0x77557755;
-    trudp->trudp_data_label[1] = 0x55775577;
-
     // Send INITIALIZE event
-    trudpSendEvent((void*)trudp, INITIALIZE, NULL, 0, NULL);
+    trudpSendGlobalEvent(trudp, INITIALIZE, NULL, 0, NULL);
 
     return trudp;
 }
@@ -86,7 +82,7 @@ trudpData* trudpInit(int fd, int port, trudpEventCb event_cb, void* user_data) {
  */
 void trudpDestroy(trudpData* td) {
     if (td) {
-        trudpSendEvent((void*)td, DESTROY, NULL, 0, NULL);
+        trudpSendGlobalEvent(td, DESTROY, NULL, 0, NULL);
         teoMapDestroy(td->map);
         free(td);
     }
@@ -95,26 +91,34 @@ void trudpDestroy(trudpData* td) {
 /**
  * Execute trudpEventCb callback
  *
- * @param t_pointer Pointer to trudpData or to trudpChannelData
+ * @param tcd Pointer to trudpChannelData
  * @param event
  * @param data
  * @param data_length
  * @param reserved - reserved, not used
  */
-void trudpSendEvent(void* t_pointer, int event, void* data, size_t data_length, void* reserved) {
-    trudpData* td = (trudpData*)t_pointer;
+void trudpSendEvent(trudpChannelData* tcd, int event, void* data, size_t data_length, void* reserved) {
+    trudpData* td = (trudpData*)tcd->td;
 
-    if (td->trudp_data_label[0] == 0x77557755 && td->trudp_data_label[1] == 0x55775577) {
-        trudpEventCb cb = td->evendCb;
-        if (cb != NULL)
-            cb(t_pointer, event, data, data_length, td->user_data);
-    } else {
-        trudpChannelData* tcd = (trudpChannelData*)t_pointer;
-
-        trudpEventCb cb = TD(tcd)->evendCb;
-        if (cb != NULL)
-            cb((void*)tcd, event, data, data_length, TD(tcd)->user_data);
+    trudpEventCb cb = td->evendCb;
+    if (cb != NULL) {
+        cb((void*)tcd, event, data, data_length, td->user_data);
     }
+}
+
+/**
+ * Execute trudpEventCb callback
+ *
+ * @param td Pointer to trudpData
+ * @param event
+ * @param data
+ * @param data_length
+ * @param reserved - reserved, not used
+ */
+void trudpSendGlobalEvent(trudpData* td, int event, void* data, size_t data_length, void* reserved) {
+    trudpEventCb cb = td->evendCb;
+    if (cb != NULL)
+        cb((void*)td, event, data, data_length, td->user_data);
 }
 
 /**
@@ -126,10 +130,10 @@ void trudpSendEvent(void* t_pointer, int event, void* data, size_t data_length, 
  *
  * @return  Pointer to packet data
  */
-void* trudpSendEventGotData(void* t_pointer, trudpPacket* packet, size_t* data_length) {
+void* trudpSendEventGotData(trudpChannelData* tcd, trudpPacket* packet, size_t* data_length) {
     void* data = trudpPacketGetData(packet);
     size_t data_len = trudpPacketGetDataLength(packet);
-    trudpSendEvent(t_pointer, GOT_DATA, packet, data_len, NULL);
+    trudpSendEvent(tcd, GOT_DATA, packet, data_len, NULL);
 
     if (data_length != NULL) {
         *data_length = data_len;

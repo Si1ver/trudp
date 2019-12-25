@@ -202,7 +202,6 @@ typedef struct trudpStatData {
  * Trudp Data Structure
  */
 typedef struct trudpData {
-    uint32_t trudp_data_label[2]; ///< Labele to distinguish trudpData and trudpChannelData
     teoMap* map;                  ///< Channels map (key: ip:port:channel)
     void* psq_data;               ///< Send queue process data (used in external event loop)
     void* user_data;              ///< User data
@@ -223,7 +222,9 @@ typedef struct trudpData {
 TRUDP_API trudpData* trudpInit(int fd, int port, trudpEventCb event_cb, void* user_data);
 TRUDP_API void trudpDestroy(trudpData* td);
 TRUDP_API void trudpSendEvent(
-    void* t_pointer, int event, void* data, size_t data_length, void* reserved);
+    trudpChannelData* tcd, int event, void* data, size_t data_length, void* reserved);
+TRUDP_API void trudpSendGlobalEvent(
+    trudpData* td, int event, void* data, size_t data_length, void* reserved);
 TRUDP_API trudpChannelData* trudpGetChannelCreate(
     trudpData* td, __CONST_SOCKADDR_ARG addr, int channel);
 TRUDP_API size_t trudpProcessKeepConnection(trudpData* td);
@@ -240,7 +241,7 @@ TRUDP_API trudpChannelData* trudpGetChannelAddr(trudpData* td, char* addr, int p
 TRUDP_API void trudpChannelDestroyAll(trudpData* td);
 TRUDP_API trudpChannelData* trudpGetChannel(trudpData* td, __CONST_SOCKADDR_ARG addr, int channel);
 
-void* trudpSendEventGotData(void* t_pointer, trudpPacket* packet, size_t* data_length);
+void* trudpSendEventGotData(trudpChannelData* tcd, trudpPacket* packet, size_t* data_length);
 TRUDP_API int trudpIsPacketPing(uint8_t* data, size_t packet_length);
 
 const char* STRING_trudpEvent(trudpEvent val);
