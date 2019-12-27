@@ -45,7 +45,7 @@ static trudpChannelData* _trudpChannelAddToMap(trudpData* td, trudpChannelData* 
 static uint64_t _trudpChannelCalculateExpectedTime(
     trudpChannelData* tcd, uint64_t current_time, int retransmit);
 static void _trudpChannelCalculateTriptime(
-    trudpChannelData* tcd, void* packet, size_t send_data_length);
+    trudpChannelData* tcd, trudpPacket* packet, size_t send_data_length);
 static void _trudpChannelFree(trudpChannelData* tcd);
 static uint32_t _trudpChannelGetId(trudpChannelData* tcd);
 static uint32_t _trudpChannelGetNewId(trudpChannelData* tcd);
