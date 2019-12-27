@@ -2,6 +2,6 @@
 
 #include "trudppp/channel.hpp"
 
-int main() {
-    return 0;
+char* include_channel_stub() {
+    return "trudppp/channel.hpp";
 }

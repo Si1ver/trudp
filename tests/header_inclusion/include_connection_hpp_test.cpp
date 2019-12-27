@@ -2,6 +2,6 @@
 
 #include "trudppp/connection.hpp"
 
-int main() {
-    return 0;
+char* include_connection_stub() {
+    return "trudppp/connection.hpp";
 }

@@ -2,6 +2,6 @@
 
 #include "trudppp/constants.hpp"
 
-int main() {
-    return 0;
+char* include_constants_stub() {
+    return "trudppp/constants.hpp";
 }

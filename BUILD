@@ -59,7 +59,7 @@ cc_library(
 )
 
 cc_test(
-    name = "include_channel_test",
+    name = "header_inclusion_test",
     copts = select({
         ":windows": ["/std:c++17"],
         "//conditions:default": ["-std=c++17"],
@@ -69,49 +69,15 @@ cc_test(
         ":windows": [],
         "//conditions:default": ["-pthread"],
     }),
-    srcs = ["tests/header_inclusion/include_channel_hpp.cpp"],
-)
-
-cc_test(
-    name = "include_connection_test",
-    copts = select({
-        ":windows": ["/std:c++17"],
-        "//conditions:default": ["-std=c++17"],
-    }),
-    deps = [":trudppp", "@teobase//:teobase", "@teoccl//:teoccl"],
-    linkopts = select({
-        ":windows": [],
-        "//conditions:default": ["-pthread"],
-    }),
-    srcs = ["tests/header_inclusion/include_connection_hpp.cpp"],
-)
-
-cc_test(
-    name = "include_constants_test",
-    copts = select({
-        ":windows": ["/std:c++17"],
-        "//conditions:default": ["-std=c++17"],
-    }),
-    deps = [":trudppp", "@teobase//:teobase", "@teoccl//:teoccl"],
-    linkopts = select({
-        ":windows": [],
-        "//conditions:default": ["-pthread"],
-    }),
-    srcs = ["tests/header_inclusion/include_constants_hpp.cpp"],
-)
-
-cc_test(
-    name = "include_packet_test",
-    copts = select({
-        ":windows": ["/std:c++17"],
-        "//conditions:default": ["-std=c++17"],
-    }),
-    deps = [":trudppp", "@teobase//:teobase", "@teoccl//:teoccl"],
-    linkopts = select({
-        ":windows": [],
-        "//conditions:default": ["-pthread"],
-    }),
-    srcs = ["tests/header_inclusion/include_packet_hpp.cpp"],
+    srcs = [
+        "tests/header_inclusion/header_inclusion_test.cpp",
+        "tests/header_inclusion/include_callbacks_hpp_test.cpp",
+        "tests/header_inclusion/include_channel_hpp_test.cpp",
+        "tests/header_inclusion/include_connection_hpp_test.cpp",
+        "tests/header_inclusion/include_constants_hpp_test.cpp",
+        "tests/header_inclusion/include_packet_hpp_test.cpp",
+        "tests/header_inclusion/include_service_hpp_test.cpp",
+    ],
 )
 
 cc_test(
@@ -126,8 +92,8 @@ cc_test(
         "//conditions:default": ["-pthread"],
     }),
     srcs = [
-        "tests/packet/packet_serialization.cpp",
-        "tests/connection/connection_events.cpp",
+        "tests/unit_tests/packet_serialization_test.cpp",
+        "tests/unit_tests/connection_events_test.cpp",
         "src/trudppp/serialized_packet.hpp",
     ],
     includes = ["src"],

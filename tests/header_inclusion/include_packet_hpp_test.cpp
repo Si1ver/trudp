@@ -2,6 +2,6 @@
 
 #include "trudppp/packet.hpp"
 
-int main() {
-    return 0;
+char* include_packet_stub() {
+    return "trudppp/packet.hpp";
 }
