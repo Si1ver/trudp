@@ -6,12 +6,15 @@
 #include <functional>
 
 namespace trudppp {
+    template <template <class> class TCallback>
+    class Connection;
+
     template <template <class> class TCallback = std::function>
     class Callbacks {
     public:
-        TCallback<void()> connection_initialized;
+        TCallback<Connection<TCallback>&> connection_initialized;
 
-        TCallback<void()> connection_destroyed;
+        TCallback<Connection<TCallback>&> connection_destroyed;
     };
 } // namespace trudppp
 
