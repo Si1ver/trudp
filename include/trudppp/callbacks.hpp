@@ -12,9 +12,9 @@ namespace trudppp {
     template <template <class> class TCallback = std::function>
     class Callbacks {
     public:
-        TCallback<Connection<TCallback>&> connection_initialized;
+        TCallback<void(Connection<TCallback>&)> connection_initialized;
 
-        TCallback<Connection<TCallback>&> connection_destroyed;
+        TCallback<void(Connection<TCallback>&)> connection_destroyed;
     };
 } // namespace trudppp
 

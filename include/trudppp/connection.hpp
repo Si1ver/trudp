@@ -26,13 +26,13 @@ namespace trudppp {
 
         void EmitInitializeCallback() {
             if (callbacks.connection_initialized) {
-                callbacks.connection_initialized(&this);
+                callbacks.connection_initialized(*this);
             }
         }
 
         void EmitDestroyCallback() {
             if (callbacks.connection_destroyed) {
-                callbacks.connection_destroyed(&this);
+                callbacks.connection_destroyed(*this);
             }
         }
 

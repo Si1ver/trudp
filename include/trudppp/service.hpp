@@ -12,9 +12,9 @@
 namespace trudppp {
     template <template <class> class TCallback = std::function>
     struct ServiceSettings {
-        TCallback<Connection<TCallback>&> connection_initialized_callback;
+        TCallback<Connection<TCallback>*> connection_initialized_callback;
 
-        TCallback<Connection<TCallback>&> connection_destroyed_callback;
+        TCallback<Connection<TCallback>*> connection_destroyed_callback;
     };
 
     template <class TEndpoint, template <class> class TCallback = std::function>
