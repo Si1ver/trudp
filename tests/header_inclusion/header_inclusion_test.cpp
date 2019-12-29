@@ -7,12 +7,12 @@
 
 #include <iostream>
 
-char* include_callbacks_stub();
-char* include_channel_stub();
-char* include_connection_stub();
-char* include_constants_stub();
-char* include_packet_stub();
-char* include_service_stub();
+const char* include_callbacks_stub();
+const char* include_channel_stub();
+const char* include_connection_stub();
+const char* include_constants_stub();
+const char* include_packet_stub();
+const char* include_service_stub();
 
 int main() {
     std::cout << include_callbacks_stub() << std::endl;

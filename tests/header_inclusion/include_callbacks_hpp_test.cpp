@@ -2,6 +2,6 @@
 
 #include "trudppp/callbacks.hpp"
 
-char* include_callbacks_stub() {
+const char* include_callbacks_stub() {
     return "trudppp/callbacks.hpp";
 }
