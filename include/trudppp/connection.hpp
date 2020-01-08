@@ -47,6 +47,8 @@ namespace trudppp {
             // destroy channels
         }
 
+        void ProcessReceivedData(const std::vector<uint8_t>& data) {
+        }
     };
 } // namespace trudppp
 

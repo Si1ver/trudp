@@ -47,3 +47,11 @@ TEST(ConnectionEventsTest, InitAndDestroyEvents) {
 
     EXPECT_THAT(callback_calls, testing::ElementsAreArray({1, 1, 2, 1, 2, 2, 1, 2}));
 }
+
+TEST(ConnectionEventsTest, EmptyCallbacks) {
+    trudppp::Callbacks callbacks;
+
+    std::vector<int> callback_calls;
+
+    trudppp::Connection connection_four(callbacks);
+}
