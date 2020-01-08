@@ -63,7 +63,7 @@ TEST(ServiceTest, CreateServiceAndReceive) {
         EXPECT_THAT(callback_calls, testing::ElementsAreArray({1, 1}));
     }
 
-    EXPECT_THAT(callback_calls, testing::ElementsAreArray({1, 1}));
+    EXPECT_THAT(callback_calls, testing::ElementsAreArray({1, 1, 2, 2}));
 }
 
 TEST(ServiceTest, CreateServiceAndReject) {

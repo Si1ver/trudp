@@ -22,11 +22,11 @@ namespace trudppp {
     template <class TEndpoint, template <class> class TCallback = std::function>
     class Service {
     private:
+        Callbacks<TCallback> callbacks;
+
         std::unordered_map<TEndpoint, Connection<TCallback>> connections;
 
         bool accept_incoming_connections;
-
-        Callbacks<TCallback> callbacks;
 
         Service(const Service&) = delete;
 
