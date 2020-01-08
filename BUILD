@@ -69,6 +69,7 @@ cc_test(
         ":windows": [],
         "//conditions:default": ["-pthread"],
     }),
+    size = "small",
     srcs = [
         "tests/header_inclusion/header_inclusion_test.cpp",
         "tests/header_inclusion/include_callbacks_hpp_test.cpp",
@@ -91,6 +92,7 @@ cc_test(
         ":windows": [],
         "//conditions:default": ["-pthread"],
     }),
+    size = "small",
     srcs = [
         "tests/unit_tests/packet_serialization_test.cpp",
         "tests/unit_tests/connection_events_test.cpp",
