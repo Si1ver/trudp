@@ -3,28 +3,37 @@
 #ifndef TRUDPPP_SERVICE_HPP
 #define TRUDPPP_SERVICE_HPP
 
+#include <cstdint>
 #include <functional>
 #include <unordered_map>
+#include <vector>
 
+#include "trudppp/callbacks.hpp"
 #include "trudppp/channel.hpp"
 #include "trudppp/connection.hpp"
+#include "trudppp/packet.hpp"
 
 namespace trudppp {
-    template <template <class> class TCallback = std::function>
-    struct ServiceSettings {
-        bool accept_incoming_connections;
-
-        TCallback<void(Connection<TCallback>&)> connection_initialized_callback;
-
-        TCallback<void(Connection<TCallback>&)> connection_destroyed_callback;
-    };
-
-    template <class TEndpoint, template <class> class TCallback = std::function>
+    template <class TEndpoint>
     class Service {
-    private:
-        Callbacks<TCallback> callbacks;
+    public:
+        struct Settings {
+            bool accept_incoming_connections;
 
-        std::unordered_map<TEndpoint, Connection<TCallback>> connections;
+            std::function<void(Connection&)> connection_initialized_callback;
+
+            std::function<void(Connection&)> connection_destroyed_callback;
+
+            std::function<void(Connection&, Channel&, const Packet&)> packet_received_callback;
+
+            std::function<void(Connection&, Channel&, const std::vector<uint8_t>&)>
+                unreliable_data_received_callback;
+        };
+
+    private:
+        Callbacks callbacks;
+
+        std::unordered_map<TEndpoint, Connection> connections;
 
         bool accept_incoming_connections;
 
@@ -33,22 +42,25 @@ namespace trudppp {
         Service& operator=(const Service&) = delete;
 
     public:
-        Service(const ServiceSettings<TCallback>& settings) {
+        Service(const Settings& settings) {
             accept_incoming_connections = settings.accept_incoming_connections;
             callbacks.connection_initialized = settings.connection_initialized_callback;
             callbacks.connection_destroyed = settings.connection_destroyed_callback;
+            callbacks.packet_received = settings.packet_received_callback;
+            callbacks.unreliable_data_received = settings.unreliable_data_received_callback;
         }
 
-        Callbacks<TCallback>& GetCallbacks() { return callbacks; }
+        Callbacks& GetCallbacks() { return callbacks; }
 
-        void ProcessReceivedData(const TEndpoint& endpoint, const std::vector<uint8_t>& data) {
+        void ProcessReceivedData(
+            const TEndpoint& endpoint, const std::vector<uint8_t>& received_data) {
             auto existing_connection_it = connections.find(endpoint);
 
             if (existing_connection_it != connections.end()) {
-                existing_connection_it->second.ProcessReceivedData(data);
+                existing_connection_it->second.ProcessReceivedData(received_data);
             } else if (accept_incoming_connections) {
                 auto emplace_result = connections.emplace(endpoint, callbacks);
-                emplace_result.first->second.ProcessReceivedData(data);
+                emplace_result.first->second.ProcessReceivedData(received_data);
             } else {
                 // Data received from unknown endpoint is dropped because
                 // accept_incoming_connections is set to false.

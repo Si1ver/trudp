@@ -3,20 +3,20 @@
 #ifndef TRUDPPP_CONNECTION_HPP
 #define TRUDPPP_CONNECTION_HPP
 
-#include <functional>
-#include <map>
+#include <cstdint>
 #include <string>
+#include <unordered_map>
+#include <vector>
 
 #include "trudppp/callbacks.hpp"
 #include "trudppp/channel.hpp"
 
 namespace trudppp {
-    template <template <class> class TCallback = std::function>
     class Connection {
     private:
-        std::map<std::string, Channel<TCallback>> channels;
+        const Callbacks& callbacks;
 
-        const Callbacks<TCallback>& callbacks;
+        std::unordered_map<int, Channel> channels;
 
         // TODO: stat.
 
@@ -24,22 +24,34 @@ namespace trudppp {
 
         Connection& operator=(const Connection&) = delete;
 
-        void EmitInitializeCallback() {
+        inline void EmitInitializeCallback() {
             if (callbacks.connection_initialized) {
                 callbacks.connection_initialized(*this);
             }
         }
 
-        void EmitDestroyCallback() {
+        inline void EmitDestroyCallback() {
             if (callbacks.connection_destroyed) {
                 callbacks.connection_destroyed(*this);
             }
         }
 
-    public:
-        Connection(const Callbacks<TCallback>& callbacks) : callbacks(callbacks) {
-            EmitInitializeCallback();
+        Channel& GetOrCreateChannel(int channel_number) {
+            auto existing_channel_it = channels.find(channel_number);
+
+            if (existing_channel_it != channels.end()) {
+                return existing_channel_it->second;
+            } else {
+                // This code creates new Channel instance in map,
+                // passing needed values to Channel's constructor.
+                auto emplace_result = channels.emplace(std::piecewise_construct,
+                    std::make_tuple(channel_number), std::forward_as_tuple(callbacks, *this));
+                return emplace_result.first->second;
+            }
         }
+
+    public:
+        Connection(const Callbacks& callbacks) : callbacks(callbacks) { EmitInitializeCallback(); }
 
         ~Connection() {
             EmitDestroyCallback();
@@ -47,8 +59,7 @@ namespace trudppp {
             // destroy channels
         }
 
-        void ProcessReceivedData(const std::vector<uint8_t>& data) {
-        }
+        void ProcessReceivedData(const std::vector<uint8_t>& received_data);
     };
 } // namespace trudppp
 

@@ -13,9 +13,9 @@ TEST(ConnectionEventsTest, InitAndDestroyEvents) {
 
     std::vector<int> callback_calls;
 
-    callbacks.connection_initialized = [&callback_calls](Connection<std::function>&) { callback_calls.push_back(1); };
+    callbacks.connection_initialized = [&callback_calls](Connection&) { callback_calls.push_back(1); };
 
-    callbacks.connection_destroyed = [&callback_calls](Connection<std::function>&) { callback_calls.push_back(2); };
+    callbacks.connection_destroyed = [&callback_calls](Connection&) { callback_calls.push_back(2); };
 
     {
         Connection connection_one(callbacks);

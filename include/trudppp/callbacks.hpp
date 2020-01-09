@@ -3,18 +3,25 @@
 #ifndef TRUDPPP_CALLBACKS_HPP
 #define TRUDPPP_CALLBACKS_HPP
 
+#include <cstdint>
 #include <functional>
+#include <vector>
 
 namespace trudppp {
-    template <template <class> class TCallback>
+    // Forward declaration of classes used in callbacks.
+    class Packet;
+    class Channel;
     class Connection;
 
-    template <template <class> class TCallback = std::function>
     class Callbacks {
     public:
-        TCallback<void(Connection<TCallback>&)> connection_initialized;
+        std::function<void(Connection&)> connection_initialized;
 
-        TCallback<void(Connection<TCallback>&)> connection_destroyed;
+        std::function<void(Connection&)> connection_destroyed;
+
+        std::function<void(Connection&, Channel&, const Packet&)> packet_received;
+
+        std::function<void(Connection&, Channel&, const std::vector<uint8_t>&)> unreliable_data_received;
     };
 } // namespace trudppp
 

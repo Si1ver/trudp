@@ -5,13 +5,15 @@
 
 #include <chrono>
 #include <cstdint>
-#include <functional>
 #include <queue>
+#include <vector>
 
 #include <trudppp/callbacks.hpp>
 #include <trudppp/packet.hpp>
 
 namespace trudppp {
+    class Connection;
+
     struct SendQueueItem {
     private:
         SendQueueItem(const SendQueueItem&) = delete;
@@ -29,7 +31,6 @@ namespace trudppp {
               next_retry_time(other.next_retry_time), packet(std::move(packet)) {}
     };
 
-    template <template <class> class TCallback = std::function>
     class Channel {
     private:
         uint32_t next_send_id;
@@ -37,14 +38,29 @@ namespace trudppp {
         std::queue<void*> write_queue;
         std::queue<void*> receive_queue;
 
-        const Callbacks<TCallback>& callbacks;
+        const Callbacks& callbacks;
+
+        Connection& connection;
 
         Channel(const Channel&) = delete;
 
         Channel& operator=(const Channel&) = delete;
 
+        inline void EmitPacketReceivedCallback(const Packet& received_packet) {
+            if (callbacks.packet_received) {
+                callbacks.packet_received(connection, *this, received_packet);
+            }
+        }
+
+        inline void EmitUnreliableDataReceivedCallback(const std::vector<uint8_t>& received_data) {
+            if (callbacks.unreliable_data_received) {
+                callbacks.unreliable_data_received(connection, *this, received_data);
+            }
+        }
+
     public:
-        Channel(const Callbacks<TCallback>& callbacks) : callbacks(callbacks) {}
+        Channel(const Callbacks& callbacks, Connection& connection)
+            : callbacks(callbacks), connection(connection), next_send_id(0) {}
 
         inline uint32_t GetCurrentSendId() { return next_send_id; }
 
@@ -58,6 +74,9 @@ namespace trudppp {
                 ++next_send_id;
             }
         }
+
+        void ProcessReceivedPacket(const Packet& received_packet) {}
+        void ProcessReceivedUnreliableData(const std::vector<uint8_t>& received_data) {}
     };
 } // namespace trudppp
 

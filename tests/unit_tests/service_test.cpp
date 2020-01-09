@@ -1,3 +1,8 @@
+#include <chrono>
+#include <cstdint>
+#include <functional>
+#include <vector>
+
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
 
@@ -20,17 +25,43 @@ const std::vector<uint8_t> CreateTestPacket() {
     return internal::SerializePacket(test_packet);
 }
 
+class TestEndpoint {
+    private:
+        int endpoint_id;
+
+    public:
+        TestEndpoint(int endpoint_id) : endpoint_id(endpoint_id) {}
+
+        bool operator==(const TestEndpoint& other) const {
+            return endpoint_id == other.endpoint_id;
+        }
+
+        friend struct std::hash<TestEndpoint>;
+};
+
+// Custom specialization of std::hash for TestEndpoint.
+namespace std
+{
+    template<> struct hash<TestEndpoint>
+    {
+        size_t operator()(TestEndpoint const& endpoint) const noexcept
+        {
+            return std::hash<int>{}(endpoint.endpoint_id);
+        }
+    };
+}
+
 TEST(ServiceTest, CreateService) {
-    ServiceSettings service_settings;
+    Service<TestEndpoint>::Settings service_settings;
 
     std::vector<int> callback_calls;
 
     service_settings.accept_incoming_connections = true;
-    service_settings.connection_initialized_callback = [&callback_calls](Connection<std::function>&) { callback_calls.push_back(1); };
-    service_settings.connection_destroyed_callback = [&callback_calls](Connection<std::function>&) { callback_calls.push_back(2); };
+    service_settings.connection_initialized_callback = [&callback_calls](Connection&) { callback_calls.push_back(1); };
+    service_settings.connection_destroyed_callback = [&callback_calls](Connection&) { callback_calls.push_back(2); };
 
     {
-        Service<int> service(service_settings);
+        Service<TestEndpoint> service(service_settings);
 
         EXPECT_THAT(callback_calls, testing::IsEmpty());
     }
@@ -39,18 +70,18 @@ TEST(ServiceTest, CreateService) {
 }
 
 TEST(ServiceTest, CreateServiceAndReceive) {
-    ServiceSettings service_settings;
+    Service<TestEndpoint>::Settings service_settings;
 
     std::vector<int> callback_calls;
 
     service_settings.accept_incoming_connections = true;
-    service_settings.connection_initialized_callback = [&callback_calls](Connection<std::function>&) { callback_calls.push_back(1); };
-    service_settings.connection_destroyed_callback = [&callback_calls](Connection<std::function>&) { callback_calls.push_back(2); };
+    service_settings.connection_initialized_callback = [&callback_calls](Connection&) { callback_calls.push_back(1); };
+    service_settings.connection_destroyed_callback = [&callback_calls](Connection&) { callback_calls.push_back(2); };
 
     const std::vector<uint8_t> serialized_packet = CreateTestPacket();
 
     {
-        Service<int> service(service_settings);
+        Service<TestEndpoint> service(service_settings);
 
         EXPECT_THAT(callback_calls, testing::IsEmpty());
 
@@ -67,18 +98,18 @@ TEST(ServiceTest, CreateServiceAndReceive) {
 }
 
 TEST(ServiceTest, CreateServiceAndReject) {
-    ServiceSettings service_settings;
+    Service<TestEndpoint>::Settings service_settings;
 
     std::vector<int> callback_calls;
 
     service_settings.accept_incoming_connections = false;
-    service_settings.connection_initialized_callback = [&callback_calls](Connection<std::function>&) { callback_calls.push_back(1); };
-    service_settings.connection_destroyed_callback = [&callback_calls](Connection<std::function>&) { callback_calls.push_back(2); };
+    service_settings.connection_initialized_callback = [&callback_calls](Connection&) { callback_calls.push_back(1); };
+    service_settings.connection_destroyed_callback = [&callback_calls](Connection&) { callback_calls.push_back(2); };
 
     const std::vector<uint8_t> serialized_packet = CreateTestPacket();
 
     {
-        Service<int> service(service_settings);
+        Service<TestEndpoint> service(service_settings);
 
         EXPECT_THAT(callback_calls, testing::IsEmpty());
 
