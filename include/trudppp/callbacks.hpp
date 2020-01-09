@@ -22,6 +22,8 @@ namespace trudppp {
         std::function<void(Connection&, Channel&, const Packet&)> packet_received;
 
         std::function<void(Connection&, Channel&, const std::vector<uint8_t>&)> unreliable_data_received;
+
+        std::function<void(Connection&, Channel&, const std::vector<uint8_t>&)> send_data_request;
     };
 } // namespace trudppp
 

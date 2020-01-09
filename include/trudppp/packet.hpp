@@ -43,10 +43,19 @@ namespace trudppp {
     public:
         Packet() : type(PacketType::Data), channel_number(0), id(0) {}
 
-        Packet(PacketType type, uint8_t channel_number, uint32_t id, std::vector<uint8_t> data,
+        Packet(PacketType type, uint8_t channel_number, uint32_t id,
             std::chrono::system_clock::time_point timestamp)
+            : type(type), channel_number(channel_number), id(id), timestamp(timestamp) {}
+
+        Packet(PacketType type, uint8_t channel_number, uint32_t id,
+            const std::vector<uint8_t>& data, std::chrono::system_clock::time_point timestamp)
             : type(type), channel_number(channel_number), id(id), data(data), timestamp(timestamp) {
         }
+
+        Packet(PacketType type, uint8_t channel_number, uint32_t id, std::vector<uint8_t>&& data,
+            std::chrono::system_clock::time_point timestamp)
+            : type(type), channel_number(channel_number), id(id), data(std::move(data)),
+              timestamp(timestamp) {}
 
         Packet(Packet&& other) noexcept
             : type(other.type), channel_number(other.channel_number), id(other.id),

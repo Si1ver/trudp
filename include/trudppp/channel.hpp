@@ -58,11 +58,21 @@ namespace trudppp {
             }
         }
 
+        inline void EmitSendDataRequestCallback(const std::vector<uint8_t>& data_to_send) {
+            if (callbacks.send_data_request) {
+                callbacks.send_data_request(connection, *this, data_to_send);
+            }
+        }
+
+        void RequestSendPacket(const Packet& packet_to_send);
+
+        Packet CreateAckPacket(const Packet& received_packet) const;
+
     public:
         Channel(const Callbacks& callbacks, Connection& connection)
             : callbacks(callbacks), connection(connection), next_send_id(0) {}
 
-        inline uint32_t GetCurrentSendId() { return next_send_id; }
+        inline uint32_t GetCurrentSendId() const { return next_send_id; }
 
         inline uint32_t GetNextSendId() {
             uint32_t current_send_id = next_send_id;
@@ -75,8 +85,11 @@ namespace trudppp {
             }
         }
 
-        void ProcessReceivedPacket(const Packet& received_packet) {}
-        void ProcessReceivedUnreliableData(const std::vector<uint8_t>& received_data) {}
+        void ProcessReceivedPacket(const Packet& received_packet);
+
+        void ProcessReceivedUnreliableData(const std::vector<uint8_t>& received_data) {
+            EmitUnreliableDataReceivedCallback(received_data);
+        }
     };
 } // namespace trudppp
 

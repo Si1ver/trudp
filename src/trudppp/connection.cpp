@@ -12,6 +12,15 @@ namespace trudppp {
 
             int channel_number = received_packet.GetChannelNumber();
 
+            // This check is ported from legacy code.
+            if (received_packet.GetType() == trudppp::PacketType::Ping) {
+                auto existing_channel_it = channels.find(channel_number);
+
+                if (existing_channel_it == channels.end()) {
+                    return;
+                }
+            }
+
             Channel& channel = GetOrCreateChannel(channel_number);
 
             channel.ProcessReceivedPacket(received_packet);

@@ -23,7 +23,6 @@
     <ClInclude Include="..\..\include\trudppp\channel.hpp" />
     <ClInclude Include="..\..\include\trudppp\connection.hpp" />
     <ClInclude Include="..\..\include\trudppp\constants.hpp" />
-    <ClInclude Include="..\..\include\trudppp\endpoint.hpp" />
     <ClInclude Include="..\..\include\trudppp\packet.hpp" />
     <ClInclude Include="..\..\include\trudppp\service.hpp" />
     <ClInclude Include="..\..\libs\teobase\include\teobase\api.h" />

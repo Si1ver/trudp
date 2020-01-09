@@ -28,6 +28,9 @@ namespace trudppp {
 
             std::function<void(Connection&, Channel&, const std::vector<uint8_t>&)>
                 unreliable_data_received_callback;
+
+            std::function<void(Connection&, Channel&, const std::vector<uint8_t>&)>
+                send_data_callback;
         };
 
     private:
