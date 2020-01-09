@@ -63,7 +63,11 @@ namespace trudppp {
 
                 RequestSendPacket(ack_packet);
 
-                // TODO: Debug packet dump;
+                // TODO: Debug packet dump.
+
+                // TODO: Receive queue.
+
+                EmitPacketReceivedCallback(received_packet);
 
                 break;
             }

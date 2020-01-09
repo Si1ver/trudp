@@ -11,33 +11,35 @@
 
 using namespace trudppp;
 
-const std::vector<uint8_t> CreateTestPacket() {
-    using namespace std::chrono;
+namespace {
+    const std::vector<uint8_t> CreateTestPacket() {
+        using namespace std::chrono;
 
-    const PacketType packet_type = PacketType::Data;
-    const uint8_t channel = 1;
-    const uint32_t packet_id = 0;
-    const std::vector<uint8_t> data = {};
-    const auto now_us = time_point_cast<microseconds>(system_clock::now());
+        const PacketType packet_type = PacketType::Data;
+        const uint8_t channel = 1;
+        const uint32_t packet_id = 0;
+        const std::vector<uint8_t> data = {};
+        const auto now_us = time_point_cast<microseconds>(system_clock::now());
 
-    Packet test_packet(packet_type, channel, packet_id, data, now_us);
+        Packet test_packet(packet_type, channel, packet_id, data, now_us);
 
-    return internal::SerializePacket(test_packet);
+        return std::move(internal::SerializePacket(test_packet));
+    }
+
+    class TestEndpoint {
+        private:
+            int endpoint_id;
+
+        public:
+            TestEndpoint(int endpoint_id) : endpoint_id(endpoint_id) {}
+
+            bool operator==(const TestEndpoint& other) const {
+                return endpoint_id == other.endpoint_id;
+            }
+
+            friend struct std::hash<TestEndpoint>;
+    };
 }
-
-class TestEndpoint {
-    private:
-        int endpoint_id;
-
-    public:
-        TestEndpoint(int endpoint_id) : endpoint_id(endpoint_id) {}
-
-        bool operator==(const TestEndpoint& other) const {
-            return endpoint_id == other.endpoint_id;
-        }
-
-        friend struct std::hash<TestEndpoint>;
-};
 
 // Custom specialization of std::hash for TestEndpoint.
 namespace std

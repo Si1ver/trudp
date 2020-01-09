@@ -94,6 +94,7 @@ cc_test(
     }),
     size = "small",
     srcs = [
+        "tests/unit_tests/channel_send_test.cpp",
         "tests/unit_tests/packet_serialization_test.cpp",
         "tests/unit_tests/connection_events_test.cpp",
         "tests/unit_tests/service_test.cpp",
