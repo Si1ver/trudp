@@ -5,6 +5,7 @@
 
 #include <chrono>
 #include <cstdint>
+#include <map>
 #include <queue>
 #include <vector>
 
@@ -28,15 +29,38 @@ namespace trudppp {
 
         SendQueueItem(SendQueueItem&& other) noexcept
             : expected_time(other.expected_time), retry_count(other.retry_count),
-              next_retry_time(other.next_retry_time), packet(std::move(packet)) {}
+              next_retry_time(other.next_retry_time), packet(std::move(other.packet)) {}
+    };
+
+    struct ReceivedPacketItem {
+    private:
+        ReceivedPacketItem(const ReceivedPacketItem&) = delete;
+
+        ReceivedPacketItem& operator=(const ReceivedPacketItem&) = delete;
+
+    public:
+        std::chrono::system_clock::time_point receive_timestamp;
+        Packet packet;
+
+        ReceivedPacketItem(
+            std::chrono::system_clock::time_point receive_timestamp, const Packet& packet)
+            : receive_timestamp(receive_timestamp), packet(packet) {}
+
+        ReceivedPacketItem(
+            std::chrono::system_clock::time_point receive_timestamp, Packet&& packet) noexcept
+            : receive_timestamp(receive_timestamp), packet(std::move(packet)) {}
+
+        ReceivedPacketItem(ReceivedPacketItem&& other) noexcept
+            : receive_timestamp(other.receive_timestamp), packet(std::move(other.packet)) {}
     };
 
     class Channel {
     private:
         uint32_t next_send_id;
+        uint32_t expected_receive_id;
         std::queue<SendQueueItem> send_queue;
         std::queue<void*> write_queue;
-        std::queue<void*> receive_queue;
+        std::map<uint32_t, ReceivedPacketItem> received_packets;
 
         const Callbacks& callbacks;
 
@@ -70,7 +94,8 @@ namespace trudppp {
 
     public:
         Channel(const Callbacks& callbacks, Connection& connection)
-            : callbacks(callbacks), connection(connection), next_send_id(0) {}
+            : callbacks(callbacks), connection(connection), next_send_id(0),
+              expected_receive_id(0){}
 
         inline uint32_t GetCurrentSendId() const { return next_send_id; }
 

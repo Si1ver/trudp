@@ -67,7 +67,50 @@ namespace trudppp {
 
                 // TODO: Receive queue.
 
-                EmitPacketReceivedCallback(received_packet);
+                uint32_t packet_id = received_packet.GetId();
+
+                // This check is ported from legacy code.
+                if (expected_receive_id == 0 && packet_id != 0) {
+                    // TODO: Reset channel.
+                    break;
+                }
+
+                if (expected_receive_id == packet_id) {
+                    EmitPacketReceivedCallback(received_packet);
+
+                    ++expected_receive_id;
+
+                    // Check received packets with bigger id.
+                    if (!received_packets.empty()) {
+                        auto existing_item = received_packets.find(expected_receive_id);
+
+                        while (existing_item != received_packets.end()) {
+                            EmitPacketReceivedCallback(existing_item->second.packet);
+
+                            received_packets.erase(existing_item);
+
+                            ++expected_receive_id;
+                            existing_item = received_packets.find(expected_receive_id);
+                        }
+                    }
+
+                    break;
+                }
+
+                // TODO: replace with modulus substraction
+                if (expected_receive_id < packet_id) {
+                    auto existing_item = received_packets.find(packet_id);
+
+                    if (existing_item == received_packets.end()) {
+                        auto receive_timestamp_us =
+                            std::chrono::time_point_cast<std::chrono::microseconds>(
+                                std::chrono::system_clock::now());
+
+                        received_packets.emplace(std::piecewise_construct,
+                            std::make_tuple(packet_id),
+                            std::forward_as_tuple(receive_timestamp_us, received_packet));
+                    }
+                }
 
                 break;
             }
