@@ -1,16 +1,9 @@
 #include "trudppp/channel.hpp"
 
 #include <stdexcept>
-
-#include "trudppp/serialized_packet.hpp"
+#include <utility>
 
 namespace trudppp {
-    void Channel::RequestSendPacket(const Packet& packet_to_send) {
-        const std::vector<uint8_t> serialized_packet = internal::SerializePacket(packet_to_send);
-
-        EmitSendDataRequestCallback(serialized_packet);
-    }
-
     Packet Channel::CreateAckPacket(const Packet& received_packet) const {
         switch (received_packet.GetType()) {
             case PacketType::Ping: {
@@ -34,6 +27,23 @@ namespace trudppp {
         }
     }
 
+    void Channel::Reset() {
+        callbacks.EmitChannelReset();
+
+        next_send_id = 0;
+        expected_receive_id = 0;
+
+        // Clear saved packets.
+        SendQueueType new_send_queue;
+        std::swap(send_queue, new_send_queue);
+
+        WriteQueueType new_write_queue;
+        std::swap(write_queue, new_write_queue);
+
+        ReceivedPacketsType new_received_packets;
+        std::swap(received_packets, new_received_packets);
+    }
+
     void Channel::ProcessReceivedPacket(const Packet& received_packet) {
         switch (received_packet.GetType()) {
             case PacketType::Ack: {
@@ -50,8 +60,7 @@ namespace trudppp {
 
             case PacketType::Ping: {
                 Packet ack_packet = CreateAckPacket(received_packet);
-
-                RequestSendPacket(ack_packet);
+                callbacks.EmitSendPacketRequested(ack_packet);
 
                 // TODO: Event: ping received.
 
@@ -60,8 +69,7 @@ namespace trudppp {
 
             case PacketType::Data: {
                 Packet ack_packet = CreateAckPacket(received_packet);
-
-                RequestSendPacket(ack_packet);
+                callbacks.EmitSendPacketRequested(ack_packet);
 
                 // TODO: Debug packet dump.
 
@@ -71,25 +79,26 @@ namespace trudppp {
 
                 // This check is ported from legacy code.
                 if (expected_receive_id == 0 && packet_id != 0) {
-                    // TODO: Reset channel.
+                    Reset();
                     break;
                 }
 
                 if (expected_receive_id == packet_id) {
-                    EmitPacketReceivedCallback(received_packet);
+                    callbacks.EmitDataReceived(received_packet.GetData(), true);
 
-                    ++expected_receive_id;
+                    expected_receive_id = IncrementPacketId(expected_receive_id);
 
-                    // Check received packets with bigger id.
+                    // Check already received packets.
                     if (!received_packets.empty()) {
                         auto existing_item = received_packets.find(expected_receive_id);
 
                         while (existing_item != received_packets.end()) {
-                            EmitPacketReceivedCallback(existing_item->second.packet);
+                            const Packet& packet = existing_item->second.packet;
+                            callbacks.EmitDataReceived(packet.GetData(), true);
 
                             received_packets.erase(existing_item);
 
-                            ++expected_receive_id;
+                            expected_receive_id = IncrementPacketId(expected_receive_id);
                             existing_item = received_packets.find(expected_receive_id);
                         }
                     }
@@ -97,7 +106,7 @@ namespace trudppp {
                     break;
                 }
 
-                // TODO: replace with modulus substraction
+                // TODO: replace with modulus subtraction
                 if (expected_receive_id < packet_id) {
                     auto existing_item = received_packets.find(packet_id);
 
@@ -110,6 +119,14 @@ namespace trudppp {
                             std::make_tuple(packet_id),
                             std::forward_as_tuple(receive_timestamp_us, received_packet));
                     }
+
+                    break;
+                }
+
+                // This check is ported from legacy code.
+                if (packet_id == 0 && expected_receive_id != 1) {
+                    Reset();
+                    break;
                 }
 
                 break;
@@ -117,12 +134,9 @@ namespace trudppp {
 
             case PacketType::Reset: {
                 Packet ack_packet = CreateAckPacket(received_packet);
+                callbacks.EmitSendPacketRequested(ack_packet);
 
-                RequestSendPacket(ack_packet);
-
-                // TODO: Event: Channel will be reset.
-
-                // TODO: Reset channel (or connection?).
+                Reset();
 
                 break;
             }
@@ -131,5 +145,9 @@ namespace trudppp {
                 break;
             }
         }
+    }
+
+    void Channel::SendData(const std::vector<uint8_t>& received_data) {
+
     }
 } // namespace trudppp

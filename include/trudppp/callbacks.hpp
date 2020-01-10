@@ -10,20 +10,47 @@
 namespace trudppp {
     // Forward declaration of classes used in callbacks.
     class Packet;
-    class Channel;
     class Connection;
 
     class Callbacks {
     public:
-        std::function<void(Connection&)> connection_initialized;
+        typedef void ConnectionInitializedCallback(Connection& connection);
+        typedef void ConnectionDestroyedCallback(Connection& connection);
+        typedef void DataReceivedCallback(Connection& connection, uint8_t channel_number,
+            const std::vector<uint8_t>& received_data, bool is_reliable);
+        typedef void DataSendRequestedCallback(Connection& connection, uint8_t channel_number,
+            const std::vector<uint8_t>& data_to_send);
 
-        std::function<void(Connection&)> connection_destroyed;
+        std::function<ConnectionInitializedCallback> connection_initialized;
+        std::function<ConnectionDestroyedCallback> connection_destroyed;
+        std::function<DataReceivedCallback> data_received;
+        std::function<DataSendRequestedCallback> data_send_requested;
 
-        std::function<void(Connection&, Channel&, const Packet&)> packet_received;
+        inline void EmitConnectionInitialized(Connection& connection) const {
+            if (connection_initialized) {
+                connection_initialized(connection);
+            }
+        }
 
-        std::function<void(Connection&, Channel&, const std::vector<uint8_t>&)> unreliable_data_received;
+        inline void EmitConnectionDestroyed(Connection& connection) const {
+            if (connection_destroyed) {
+                connection_destroyed(connection);
+            }
+        }
 
-        std::function<void(Connection&, Channel&, const std::vector<uint8_t>&)> send_data_request;
+        inline void EmitDataReceived(Connection& connection, uint8_t channel_number,
+            const std::vector<uint8_t>& received_data, bool is_reliable) const {
+            if (data_received) {
+                data_received(connection, channel_number, received_data, is_reliable);
+            }
+        }
+
+        inline void EmitDataSendRequested(Connection& connection, uint8_t channel_number,
+            const std::vector<uint8_t>& data_to_send) const {
+            if (data_send_requested) {
+                data_send_requested(connection, channel_number, data_to_send);
+            }
+        }
     };
 } // namespace trudppp
 

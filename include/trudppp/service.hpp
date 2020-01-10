@@ -24,13 +24,13 @@ namespace trudppp {
 
             std::function<void(Connection&)> connection_destroyed_callback;
 
-            std::function<void(Connection&, Channel&, const Packet&)> packet_received_callback;
+            std::function<void(Connection& connection, uint8_t channel_number,
+                const std::vector<uint8_t>& received_data, bool is_reliable)>
+                data_received_callback;
 
-            std::function<void(Connection&, Channel&, const std::vector<uint8_t>&)>
-                unreliable_data_received_callback;
-
-            std::function<void(Connection&, Channel&, const std::vector<uint8_t>&)>
-                send_data_callback;
+            std::function<void(Connection& connection, uint8_t channel_number,
+                const std::vector<uint8_t>& data_to_send)>
+                data_send_requested_callback;
         };
 
     private:
@@ -49,8 +49,8 @@ namespace trudppp {
             accept_incoming_connections = settings.accept_incoming_connections;
             callbacks.connection_initialized = settings.connection_initialized_callback;
             callbacks.connection_destroyed = settings.connection_destroyed_callback;
-            callbacks.packet_received = settings.packet_received_callback;
-            callbacks.unreliable_data_received = settings.unreliable_data_received_callback;
+            callbacks.data_received = settings.data_received_callback;
+            callbacks.data_send_requested = settings.data_send_requested_callback;
         }
 
         Callbacks& GetCallbacks() { return callbacks; }
