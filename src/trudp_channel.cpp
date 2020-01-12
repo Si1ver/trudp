@@ -28,9 +28,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "teobase/logging.h"
+#include <string>
 
-#include "teoccl/memory.h"
+#include "teobase/logging.h"
 
 #include "trudp_channel.h"
 #include "trudp_stat.h"
@@ -77,8 +77,10 @@ void trudp_ChannelSendReset(trudpChannelData* tcd) {
  * @return
  */
 static trudpChannelData* _trudpChannelAddToMap(trudpData* td, trudpChannelData* tcd) {
-    return (trudpChannelData*)teoMapAdd(
-        td->map, tcd->channel_key, tcd->channel_key_length, tcd, sizeof(trudpChannelData));
+    std::string key(tcd->channel_key, tcd->channel_key_length);
+    auto it = td->map.insert(std::make_pair(key, *tcd));
+
+    return &it.first->second;
 }
 
 /**
@@ -166,13 +168,12 @@ trudpChannelData* trudpChannelNew(
     _trudpChannelSetDefaults(&tcd);
     tcd.fd = 0;
 
-    // Add cannel to map
+    // Add channel to map
     size_t channel_key_length;
     char* channel_key = trudpMakeKey(trudpUdpGetAddr((__CONST_SOCKADDR_ARG)&tcd.remaddr, NULL),
         remote_port_i, channel, &channel_key_length);
 
-    tcd.channel_key = (char*)ccl_malloc(channel_key_length);
-    memcpy(tcd.channel_key, channel_key, channel_key_length);
+    tcd.channel_key.assign(channel_key, channel_key_length);
     tcd.channel_key_length = channel_key_length;
 
     trudpChannelData* tcd_return = _trudpChannelAddToMap((trudpData*)parent, &tcd);
@@ -204,11 +205,11 @@ void trudpChannelDestroy(trudpChannelData* tcd) {
     trudpWriteQueueDestroy(tcd->writeQueue);
     trudpReceiveQueueDestroy(tcd->receiveQueue);
 
-    char* channel_key = tcd->channel_key;
-
-    teoMapDelete(TD(tcd)->map, channel_key, tcd->channel_key_length);
-
-    free(channel_key);
+    auto& map = TD(tcd)->map;
+    auto it = map.find(tcd->channel_key);
+    if (it != map.end()) {
+        map.erase(it);
+    }
 }
 
 // ============================================================================
@@ -319,12 +320,12 @@ static void _trudpChannelCalculateTriptime(
     tcd->triptime = trudpGetTimestamp() - trudpPacketGetTimestamp(packet);
 
     // Calculate and set Middle Triptime value
-    tcd->triptimeMiddle =
-        tcd->triptimeMiddle == START_MIDDLE_TIME ? tcd->triptime * tcd->triptimeFactor
-                                                 : // Set first middle time
-            tcd->triptime > tcd->triptimeMiddle ? tcd->triptime * tcd->triptimeFactor
-                                                : // Set middle time to max triptime
-                (tcd->triptimeMiddle * 19 + tcd->triptime) / 20.0; // Calculate middle value
+    tcd->triptimeMiddle = tcd->triptimeMiddle == START_MIDDLE_TIME
+        ? tcd->triptime * tcd->triptimeFactor
+        : // Set first middle time
+        tcd->triptime > tcd->triptimeMiddle ? tcd->triptime * tcd->triptimeFactor
+                                            : // Set middle time to max triptime
+            (tcd->triptimeMiddle * 19 + tcd->triptime) / 20.0; // Calculate middle value
 
     // Correct triptimeMiddle
     if (tcd->triptimeMiddle < tcd->triptime * tcd->triptimeFactor)
@@ -414,7 +415,8 @@ void trudpChannelSendRESET(trudpChannelData* tcd, void* data, size_t data_length
     if (tcd) {
         trudpSendEvent(tcd, SEND_RESET, data, data_length, NULL);
 
-        trudpPacket* packetRESET = trudpPacketRESETcreateNew(_trudpChannelGetNewId(tcd), tcd->channel);
+        trudpPacket* packetRESET =
+            trudpPacketRESETcreateNew(_trudpChannelGetNewId(tcd), tcd->channel);
 #if !USE_WRITE_QUEUE
         trudpSendEvent(tcd, PROCESS_SEND, packetRESET, trudpPacketRESETlength(), NULL);
 #else
@@ -600,8 +602,8 @@ void* trudpChannelProcessReceivedPacket(
 
                     if (trudpWriteQueueSize(tcd->writeQueue) > 0) {
                         trudpWriteQueueData* wqd_first = trudpWriteQueueGetFirst(tcd->writeQueue);
-                        _trudpChannelSendPacket(
-                            tcd, (trudpPacket*)wqd_first->packet.data(), wqd_first->packet_length, 1);
+                        _trudpChannelSendPacket(tcd, (trudpPacket*)wqd_first->packet.data(),
+                            wqd_first->packet_length, 1);
                         trudpWriteQueueDeleteFirst(tcd->writeQueue);
                         TD(tcd)->stat.writeQueue.size_current--;
                     }

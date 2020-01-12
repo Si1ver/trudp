@@ -9,7 +9,10 @@ cc_library(
         ":windows": ["/std:c++17"],
         "//conditions:default": ["-std=c++17"],
     }),
-    deps = ["@teobase//:teobase", "@teoccl//:teoccl"],
+    deps = [
+        "@teobase//:teobase",
+#        "@teoccl//:teoccl",
+    ],
     srcs = [
         "src/trudppp/callbacks.cpp",
         "src/trudppp/channel.cpp",
@@ -64,7 +67,11 @@ cc_test(
         ":windows": ["/std:c++17"],
         "//conditions:default": ["-std=c++17"],
     }),
-    deps = [":trudppp", "@teobase//:teobase", "@teoccl//:teoccl"],
+    deps = [
+        ":trudppp",
+        "@teobase//:teobase",
+#        "@teoccl//:teoccl",
+    ],
     linkopts = select({
         ":windows": [],
         "//conditions:default": ["-pthread"],
@@ -87,7 +94,12 @@ cc_test(
         ":windows": ["/std:c++17"],
         "//conditions:default": ["-std=c++17"],
     }),
-    deps = [":trudppp", "@teobase//:teobase", "@teoccl//:teoccl", "@googletest//:gtest_main"],
+    deps = [
+        ":trudppp",
+        "@teobase//:teobase",
+#        "@teoccl//:teoccl",
+        "@googletest//:gtest_main",
+    ],
     linkopts = select({
         ":windows": [],
         "//conditions:default": ["-pthread"],

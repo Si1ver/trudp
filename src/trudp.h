@@ -27,7 +27,11 @@
 #ifndef TR_UDP_H
 #define TR_UDP_H
 
-#include "teoccl/map.h"
+#include <functional>
+#include <map>
+#include <string>
+#include <unordered_map>
+
 #include "packet_queue.h"
 #include "write_queue.h"
 #include "packet.h"
@@ -202,11 +206,12 @@ typedef struct trudpStatData {
  * Trudp Data Structure
  */
 typedef struct trudpData {
-    teoMap* map;                  ///< Channels map (key: ip:port:channel)
-    void* psq_data;               ///< Send queue process data (used in external event loop)
-    void* user_data;              ///< User data
-    int port;                     ///< Port
-    int fd;                       ///< File descriptor
+    typedef std::map<std::string, trudpChannelData, std::less<>> MapType;
+    MapType map; ///< Channels map (key: ip:port:channel)
+    void* psq_data; ///< Send queue process data (used in external event loop)
+    void* user_data; ///< User data
+    int port; ///< Port
+    int fd; ///< File descriptor
 
     // Callback
     trudpEventCb evendCb;

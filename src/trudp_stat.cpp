@@ -131,30 +131,27 @@ void* trudpStatGet(trudpData* td, int type, size_t* stat_len) {
 
     // Binary output type
     if (type == 0) {
-        uint32_t cs_num = teoMapSize(td->map);
+        uint32_t cs_num = td->map.size();
         size_t ts_len = sizeof(trudpStat) + cs_num * sizeof(trudpStatChannelData);
 
         trudpStat* ts = (trudpStat*)malloc(ts_len);
         if (ts != NULL) {
             memset(ts, 0, ts_len);
             ts->cs_num = cs_num;
-            if (cs_num) {
-                teoMapIterator it;
-                teoMapIteratorReset(&it, td->map);
+            if (cs_num != 0) {
 
                 int i = 0;
-                while (teoMapIteratorNext(&it)) {
-                    teoMapElementData* el = teoMapIteratorElement(&it);
-                    trudpChannelData* tcd = (trudpChannelData*)teoMapIteratorElementData(el, NULL);
-                    size_t key_length;
-                    void* key = teoMapIteratorElementKey(el, &key_length);
+                for (auto it = td->map.begin(); it != td->map.end(); ++it) {
+                    trudpChannelData* tcd = &it->second;
+                    const char* key = it->first.data();
+                    size_t key_length = it->first.length();
                     // Common statistic
                     ts->packets_send += tcd->stat.packets_send;
                     ts->ack_receive += tcd->stat.ack_receive;
                     ts->packets_receive += tcd->stat.packets_receive;
                     ts->packets_dropped += tcd->stat.packets_receive_dropped;
 
-                    // Cannel statistic
+                    // Channel statistic
                     memcpy(&ts->cs[i], &tcd->stat, sizeof(tcd->stat));
                     memcpy(ts->cs[i].key, key,
                         key_length < MAX_KEY_LENGTH ? key_length : MAX_KEY_LENGTH - 1);
@@ -304,15 +301,12 @@ char* ksnTRUDPstatShowStr(trudpData* td, int page) {
     int i = 0;
     char *tbl_str = _strdup(""), *tbl_total = _strdup("");
     trudpStatChannelData totalStat;
-    teoMapIterator it;
-    teoMapIteratorReset(&it, td->map);
 
     memset(&totalStat, 0, sizeof(totalStat));
-    while (teoMapIteratorNext(&it)) {
-        size_t key_len;
-        teoMapElementData* el = teoMapIteratorElement(&it);
-        char* key = (char*)teoMapIteratorElementKey(el, &key_len);
-        trudpChannelData* tcd = (trudpChannelData*)teoMapIteratorElementData(el, NULL);
+    for (auto it = td->map.begin(); it != td->map.end(); ++it) {
+        const char* key = it->first.data();
+        size_t key_len = it->first.length();
+        trudpChannelData* tcd = &it->second;
 
         packets_send += tcd->stat.packets_send;
         ack_receive += tcd->stat.ack_receive;
