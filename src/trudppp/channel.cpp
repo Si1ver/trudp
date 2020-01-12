@@ -34,11 +34,11 @@ namespace trudppp {
         expected_receive_id = 0;
 
         // Clear saved packets.
-        SendQueueType new_send_queue;
-        std::swap(send_queue, new_send_queue);
+        SentPacketsType new_sent_packets;
+        std::swap(sent_packets, new_sent_packets);
 
-        WriteQueueType new_write_queue;
-        std::swap(write_queue, new_write_queue);
+        ScheduledPacketsType new_scheduled_packets;
+        std::swap(scheduled_packets, new_scheduled_packets);
 
         ReceivedPacketsType new_received_packets;
         std::swap(received_packets, new_received_packets);

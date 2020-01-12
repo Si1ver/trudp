@@ -6,18 +6,18 @@
 #include <chrono>
 #include <cstdint>
 #include <functional>
+#include <list>
 #include <map>
 #include <queue>
-#include <vector>
 
 #include <trudppp/callbacks.hpp>
 #include <trudppp/packet.hpp>
 
 namespace trudppp {
-    struct SendQueueItem {
+    struct SentPacketItem {
     private:
-        SendQueueItem(const SendQueueItem&) = delete;
-        SendQueueItem& operator=(const SendQueueItem&) = delete;
+        SentPacketItem(const SentPacketItem&) = delete;
+        SentPacketItem& operator=(const SentPacketItem&) = delete;
 
     public:
         std::chrono::system_clock::time_point expected_time;
@@ -25,7 +25,7 @@ namespace trudppp {
         std::chrono::system_clock::time_point next_retry_time;
         Packet packet;
 
-        SendQueueItem(SendQueueItem&& other) noexcept
+        SentPacketItem(SentPacketItem&& other) noexcept
             : expected_time(other.expected_time), retry_count(other.retry_count),
               next_retry_time(other.next_retry_time), packet(std::move(other.packet)) {}
     };
@@ -93,8 +93,8 @@ namespace trudppp {
         };
 
     private:
-        typedef std::queue<SendQueueItem> SendQueueType;
-        typedef std::queue<void*> WriteQueueType;
+        typedef std::list<SentPacketItem> SentPacketsType;
+        typedef std::queue<void*> ScheduledPacketsType;
         typedef std::map<uint32_t, ReceivedPacketItem> ReceivedPacketsType;
 
         const uint8_t channel_number;
@@ -104,8 +104,8 @@ namespace trudppp {
         uint32_t next_send_id;
         uint32_t expected_receive_id;
 
-        SendQueueType send_queue;
-        WriteQueueType write_queue;
+        SentPacketsType sent_packets;
+        ScheduledPacketsType scheduled_packets;
 
         ReceivedPacketsType received_packets;
 
