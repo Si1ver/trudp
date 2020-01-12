@@ -486,9 +486,7 @@ static size_t _trudpChannelSendPacket(
                 _trudpChannelCalculateExpectedTime(tcd, teoGetTimestampFull(), 0));
             _trudpChannelIncrementStatSendQueueSize(tcd);
         } else {
-            void* packetCopy = ccl_malloc(packetLength);
-            memcpy(packetCopy, packet, packetLength);
-            trudpWriteQueueAdd(tcd->writeQueue, NULL, packetCopy, packetLength);
+            trudpWriteQueueAdd(tcd->writeQueue, (uint8_t*)packet, packetLength);
             _trudpChannelIncrementStatWriteQueueSize(tcd);
         }
     }
@@ -603,8 +601,7 @@ void* trudpChannelProcessReceivedPacket(
                     if (trudpWriteQueueSize(tcd->writeQueue) > 0) {
                         trudpWriteQueueData* wqd_first = trudpWriteQueueGetFirst(tcd->writeQueue);
                         _trudpChannelSendPacket(
-                            tcd, (trudpPacket*)wqd_first->packet_ptr, wqd_first->packet_length, 1);
-                        free(wqd_first->packet_ptr);
+                            tcd, (trudpPacket*)wqd_first->packet.data(), wqd_first->packet_length, 1);
                         trudpWriteQueueDeleteFirst(tcd->writeQueue);
                         TD(tcd)->stat.writeQueue.size_current--;
                     }
@@ -879,7 +876,7 @@ size_t trudpChannelWriteQueueProcess(trudpChannelData* tcd) {
     size_t retval = 0;
     trudpWriteQueueData* wqd = trudpWriteQueueGetFirst(tcd->writeQueue);
     if (wqd) {
-        void* packet = wqd->packet_ptr ? wqd->packet_ptr : wqd->packet;
+        void* packet = wqd->packet.data();
         trudpSendEvent(tcd, PROCESS_SEND, packet, wqd->packet_length, NULL);
         trudpWriteQueueDeleteFirst(tcd->writeQueue);
         retval = wqd->packet_length;

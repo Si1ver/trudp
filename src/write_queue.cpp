@@ -30,6 +30,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <queue>
+
 #include "write_queue.h"
 
 /**
@@ -39,9 +41,7 @@
  */
 
 trudpWriteQueue* trudpWriteQueueNew() {
-    trudpWriteQueue* wq = (trudpWriteQueue*)malloc(sizeof(trudpWriteQueue));
-    wq->q = teoQueueNew();
-    return wq;
+    return new trudpWriteQueue;
 }
 /**
  * Destroy Write queue
@@ -50,9 +50,8 @@ trudpWriteQueue* trudpWriteQueueNew() {
  */
 
 void trudpWriteQueueDestroy(trudpWriteQueue* wq) {
-    if (wq) {
-        teoQueueDestroy(wq->q);
-        free(wq);
+    if (wq != nullptr) {
+        delete wq;
     }
 }
 /**
@@ -62,8 +61,13 @@ void trudpWriteQueueDestroy(trudpWriteQueue* wq) {
  * @return Zero at success
  */
 
-int trudpWriteQueueFree(trudpWriteQueue* wq) {
-    return wq && wq->q ? teoQueueFree(wq->q) : -1;
+void trudpWriteQueueFree(trudpWriteQueue* wq) {
+    if (wq == nullptr) {
+        return;
+    }
+
+    std::queue<trudpWriteQueueData> new_q;
+    std::swap(wq->q, new_q);
 }
 /**
  * Get number of elements in Write queue
@@ -74,10 +78,12 @@ int trudpWriteQueueFree(trudpWriteQueue* wq) {
  */
 
 size_t trudpWriteQueueSize(trudpWriteQueue* wq) {
-    return wq ? teoQueueSize(wq->q) : -1;
+    if (wq == nullptr) {
+        return 0;
+    }
+
+    return wq->q.size();
 }
-trudpWriteQueueData* trudpWriteQueueAdd(
-    trudpWriteQueue* wq, void* packet, void* packet_ptr, size_t packet_length);
 /**
  * Get pointer to first element data
  *
@@ -87,7 +93,15 @@ trudpWriteQueueData* trudpWriteQueueAdd(
  */
 
 trudpWriteQueueData* trudpWriteQueueGetFirst(trudpWriteQueue* wq) {
-    return (trudpWriteQueueData*)(wq->q->first ? wq->q->first->data : NULL);
+    if (wq == nullptr) {
+        return nullptr;
+    }
+
+    if (wq->q.empty()) {
+        return nullptr;
+    }
+
+    return &wq->q.front();
 }
 /**
  * Remove first element from Write queue
@@ -97,8 +111,8 @@ trudpWriteQueueData* trudpWriteQueueGetFirst(trudpWriteQueue* wq) {
  * @return Zero at success
  */
 
-int trudpWriteQueueDeleteFirst(trudpWriteQueue* wq) {
-    return teoQueueDeleteFirst(wq->q);
+void trudpWriteQueueDeleteFirst(trudpWriteQueue* wq) {
+    wq->q.pop();
 }
 
 /**
@@ -112,20 +126,12 @@ int trudpWriteQueueDeleteFirst(trudpWriteQueue* wq) {
  * @return Pointer to added trudpWriteQueueData
  */
 trudpWriteQueueData* trudpWriteQueueAdd(
-    trudpWriteQueue* wq, void* packet, void* packet_ptr, size_t packet_length) {
-    size_t wqd_length = sizeof(trudpWriteQueueData); // + packet_length;
-    trudpWriteQueueData* wqd =
-        (trudpWriteQueueData*)((teoQueueData*)teoQueueAdd(wq->q, NULL, wqd_length))->data;
+    trudpWriteQueue* wq, uint8_t* packet, size_t packet_length) {
+    trudpWriteQueueData new_item;
+    new_item.packet_length = packet_length;
+    new_item.packet.insert(new_item.packet.end(), packet, packet + packet_length);
 
-    if (packet != NULL) {
-        memcpy(
-            wqd->packet, packet, packet_length < MAX_HEADER_SIZE ? packet_length : MAX_HEADER_SIZE);
-        wqd->packet_ptr = NULL;
-    } else {
-        memset(wqd->packet, 0, MAX_HEADER_SIZE);
-        wqd->packet_ptr = packet_ptr;
-    }
-    wqd->packet_length = packet_length;
+    wq->q.emplace(std::move(new_item));
 
-    return wqd;
+    return &wq->q.back();
 }

@@ -32,23 +32,17 @@
 
 #include <stdint.h>
 
-#include "teoccl/queue.h"
-
-#define MAX_HEADER_SIZE 64
-
-typedef struct trudpWriteQueue {
-
-    teoQueue *q;
-
-} trudpWriteQueue;
+#include <queue>
+#include <vector>
 
 typedef struct trudpWriteQueueData {
-
-    char packet[MAX_HEADER_SIZE];
+    std::vector<uint8_t> packet;
     uint16_t packet_length;
-    void *packet_ptr;
-
 } trudpWriteQueueData;
+
+typedef struct trudpWriteQueue {
+    std::queue<trudpWriteQueueData> q;
+} trudpWriteQueue;
 
 /**
  * Create new Write queue
@@ -73,7 +67,7 @@ void trudpWriteQueueDestroy(trudpWriteQueue *wq);
  * @return Zero at success
  */
 
-int trudpWriteQueueFree(trudpWriteQueue *wq);
+void trudpWriteQueueFree(trudpWriteQueue *wq);
 
 /**
  * Get number of elements in Write queue
@@ -85,8 +79,7 @@ int trudpWriteQueueFree(trudpWriteQueue *wq);
 
 size_t trudpWriteQueueSize(trudpWriteQueue *wq);
 
-trudpWriteQueueData *trudpWriteQueueAdd(trudpWriteQueue *wq, void *packet,
-        void *packet_ptr, size_t packet_length);
+trudpWriteQueueData *trudpWriteQueueAdd(trudpWriteQueue *wq, uint8_t *packet, size_t packet_length);
 /**
  * Get pointer to first element data
  *
@@ -105,6 +98,6 @@ trudpWriteQueueData *trudpWriteQueueGetFirst(trudpWriteQueue *wq);
  * @return Zero at success
  */
 
-int trudpWriteQueueDeleteFirst(trudpWriteQueue *wq);
+void trudpWriteQueueDeleteFirst(trudpWriteQueue *wq);
 
 #endif /* WRITE_QUEUE_H */
