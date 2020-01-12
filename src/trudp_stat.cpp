@@ -87,7 +87,7 @@ void trudpStatProcessLast10Receive(trudpChannelData* tcd, trudpPacket* packet) {
             if (tcd->stat.last_receive_packets_ar[i].ts > max_ts) {
                 max_ts = tcd->stat.last_receive_packets_ar[i].ts;
             } else if (tcd->stat.last_receive_packets_ar[i].ts > 0 &&
-                       tcd->stat.last_receive_packets_ar[i].ts < min_ts) {
+                tcd->stat.last_receive_packets_ar[i].ts < min_ts) {
                 min_ts = tcd->stat.last_receive_packets_ar[i].ts;
             }
         }
@@ -105,12 +105,12 @@ void trudpStatProcessLast10Receive(trudpChannelData* tcd, trudpPacket* packet) {
  * TR-UDP statistic data
  */
 typedef struct trudpStat {
-    uint32_t packets_send;    ///< Total packets send
-    uint32_t ack_receive;     ///< Total ACK reseived
+    uint32_t packets_send; ///< Total packets send
+    uint32_t ack_receive; ///< Total ACK reseived
     uint32_t packets_receive; ///< Total packet reseived
     uint32_t packets_dropped; ///< Total packet droped
 
-    uint32_t cs_num;           ///< Number of chanels
+    uint32_t cs_num; ///< Number of chanels
     trudpStatChannelData cs[]; ///< Cannels statistic
 
 } trudpStat;
@@ -326,8 +326,7 @@ char* ksnTRUDPstatShowStr(trudpData* td, int page) {
         if (i >= page * NUMBER_CHANNELS_IN_CLI_PAGE &&
             i < (page + 1) * NUMBER_CHANNELS_IN_CLI_PAGE) {
             tbl_str = sformatMessage(tbl_str,
-                "%s%3d " _ANSI_BROWN
-                "%-24.*s" _ANSI_NONE
+                "%s%3d " _ANSI_BROWN "%-24.*s" _ANSI_NONE
                 " %8d %11.3f %10.3f  %9.3f /%9.3f %8d %11.3f %10.3f %8d %8d(%d%%) %8d(%d%%) %6d "
                 "%6d %6d\n",
                 tbl_str, i + 1, key_len, key, tcd->stat.packets_send,
@@ -436,19 +435,15 @@ char* ksnTRUDPstatShowStr(trudpData* td, int page) {
         "---------------------------------------------------------------------------------\n"
         "%s"
         "%s"
-        "  " _ANSI_GREEN "send:" _ANSI_NONE
-        " send packets, " _ANSI_GREEN "speed:" _ANSI_NONE
+        "  " _ANSI_GREEN "send:" _ANSI_NONE " send packets, " _ANSI_GREEN "speed:" _ANSI_NONE
         " send speed(packets/sec), " _ANSI_GREEN "total:" _ANSI_NONE
-        " send in megabytes, " _ANSI_GREEN "wait:" _ANSI_NONE
-        " time to wait ACK, " _ANSI_GREEN "recv:" _ANSI_NONE
-        " receive packets   \n"
+        " send in megabytes, " _ANSI_GREEN "wait:" _ANSI_NONE " time to wait ACK, " _ANSI_GREEN
+        "recv:" _ANSI_NONE " receive packets   \n"
 
-        "  " _ANSI_GREEN "ACK:" _ANSI_NONE
-        " receive ACK,   " _ANSI_GREEN "repeat:" _ANSI_NONE
+        "  " _ANSI_GREEN "ACK:" _ANSI_NONE " receive ACK,   " _ANSI_GREEN "repeat:" _ANSI_NONE
         " resend packets,         " _ANSI_GREEN "drop:" _ANSI_NONE
-        " duplicate received, " _ANSI_GREEN "SQ:" _ANSI_NONE
-        " send queue,         " _ANSI_GREEN "WQ:" _ANSI_NONE
-        " write queue         " _ANSI_GREEN "RQ:" _ANSI_NONE
+        " duplicate received, " _ANSI_GREEN "SQ:" _ANSI_NONE " send queue,         " _ANSI_GREEN
+        "WQ:" _ANSI_NONE " write queue         " _ANSI_GREEN "RQ:" _ANSI_NONE
         " receive queue     \n"
 
         ,
@@ -468,11 +463,14 @@ char* ksnTRUDPstatShowStr(trudpData* td, int page) {
 char* trudpStatShowQueueStr(trudpChannelData* tcd, int type) {
     char* str = _strdup("");
 
-    teoQueueIterator it;
+    std::list<trudpPacketQueueData>::iterator it;
+    std::list<trudpPacketQueueData>::iterator end;
     if (!type) {
-        teoQueueIteratorReset(&it, tcd->sendQueue->q);
+        it = tcd->sendQueue->q.begin();
+        end = tcd->sendQueue->q.end();
     } else {
-        teoQueueIteratorReset(&it, tcd->receiveQueue->q);
+        it = tcd->receiveQueue->q.begin();
+        end = tcd->receiveQueue->q.end();
     }
 
     int i = 0;
@@ -487,21 +485,20 @@ char* trudpStatShowQueueStr(trudpChannelData* tcd, int type) {
         (int)(!type ? trudpSendQueueSize(tcd->sendQueue)
                     : trudpReceiveQueueSize(tcd->receiveQueue)),
         !type ? "next id: " : "expected id: ", !type ? tcd->sendId : tcd->receiveExpectedId);
-    while (teoQueueIteratorNext(&it)) {
-        trudpPacketQueueData* tqd =
-            (trudpPacketQueueData*)((teoQueueData*)teoQueueIteratorElement(&it))->data;
+    while (it != end) {
+        trudpPacketQueueData& tqd = *it;
 
-        long timeout_sq = current_t < tqd->expected_time
-                              ? (long)(tqd->expected_time - current_t)
-                              : -1 * (long)(current_t - tqd->expected_time);
+        long timeout_sq = current_t < tqd.expected_time
+            ? (long)(tqd.expected_time - current_t)
+            : -1 * (long)(current_t - tqd.expected_time);
 
-        trudpPacket* tq_packet = trudpPacketQueueDataGetPacket(tqd);
+        trudpPacket* tq_packet = trudpPacketQueueDataGetPacket(&tqd);
 
         str = sformatMessage(str,
             "%s"
             "  %3d   %-8u %8.3f ms   %u\n",
             str, i++, trudpPacketGetId(tq_packet), !type ? timeout_sq / 1000.0 : 0,
-            (uint32_t)(!type ? tqd->retrieves : 0));
+            (uint32_t)(!type ? tqd.retrieves : 0));
         if (i > MAX_QUELEN_SHOW) {
             str = sformatMessage(str, "%s...\n", str);
             break;

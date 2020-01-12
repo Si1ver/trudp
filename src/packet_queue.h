@@ -33,23 +33,22 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#include "teoccl/queue.h"
+#include <list>
+#include <vector>
 
 #include "packet.h"
-
-typedef struct trudpPacketQueue {
-    teoQueue* q;
-
-} trudpPacketQueue;
 
 typedef struct trudpPacketQueueData {
     uint64_t expected_time;
     uint32_t packet_length;
     uint32_t retrieves;
     uint32_t retrieves_start;
-    char packet[];
-
+    std::vector<uint8_t> packet;
 } trudpPacketQueueData;
+
+typedef struct trudpPacketQueue {
+    std::list<trudpPacketQueueData> q;
+} trudpPacketQueue;
 
 /**
  * Create new Packet queue
@@ -71,7 +70,7 @@ void trudpPacketQueueDestroy(trudpPacketQueue* tq);
  * @param tq Pointer to trudpPacketQueue
  * @return Zero at success
  */
-int trudpPacketQueueFree(trudpPacketQueue* tq);
+void trudpPacketQueueFree(trudpPacketQueue* tq);
 
 /**
  * Get number of elements in Packet queue
@@ -83,13 +82,7 @@ int trudpPacketQueueFree(trudpPacketQueue* tq);
 size_t trudpPacketQueueSize(trudpPacketQueue* tq);
 
 trudpPacketQueueData* trudpPacketQueueAdd(
-    trudpPacketQueue* tq, void* packet, size_t packet_length, uint64_t expected_time);
-/**
- * Get pointer to trudpQueueData from trudpPacketQueueData pointer
- * @param tqd Pointer to trudpPacketQueueData
- * @return Pointer to trudpQueueData or NULL if tqd is NULL
- */
-teoQueueData* trudpPacketQueueDataToQueueData(trudpPacketQueueData* tqd);
+    trudpPacketQueue* tq, uint8_t* packet, size_t packet_length, uint64_t expected_time);
 
 /**
  * Remove element from Packet queue
@@ -99,7 +92,7 @@ teoQueueData* trudpPacketQueueDataToQueueData(trudpPacketQueueData* tqd);
  *
  * @return Zero at success
  */
-int trudpPacketQueueDelete(trudpPacketQueue* tq, trudpPacketQueueData* tqd);
+void trudpPacketQueueDelete(trudpPacketQueue* tq, trudpPacketQueueData* tqd);
 
 /**
  * Move element to the end of list
@@ -114,7 +107,7 @@ trudpPacketQueueData* trudpPacketQueueFindById(trudpPacketQueue* tq, uint32_t id
 trudpPacketQueueData* trudpPacketQueueGetFirst(trudpPacketQueue* tq);
 
 static inline trudpPacket* trudpPacketQueueDataGetPacket(trudpPacketQueueData* tqd) {
-    return (trudpPacket*)(tqd->packet);
+    return reinterpret_cast<trudpPacket*>(tqd->packet.data());
 }
 
 #endif /* PACKET_QUEUE_H */

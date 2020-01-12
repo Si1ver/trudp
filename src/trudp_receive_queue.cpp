@@ -46,9 +46,8 @@ trudpReceiveQueue* trudpReceiveQueueNew() {
  */
 
 void trudpReceiveQueueDestroy(trudpReceiveQueue* rq) {
-    if (rq) {
-        teoQueueDestroy(rq->q);
-        free(rq);
+    if (rq != nullptr) {
+        delete rq;
     }
 }
 
@@ -59,8 +58,8 @@ void trudpReceiveQueueDestroy(trudpReceiveQueue* rq) {
  * @return Zero at success
  */
 
-int trudpReceiveQueueFree(trudpReceiveQueue* rq) {
-    return trudpPacketQueueFree(rq);
+void trudpReceiveQueueFree(trudpReceiveQueue* rq) {
+    trudpPacketQueueFree(rq);
 }
 
 /**
@@ -87,7 +86,7 @@ size_t trudpReceiveQueueSize(trudpReceiveQueue* sq) {
  */
 
 trudpReceiveQueueData* trudpReceiveQueueAdd(
-    trudpReceiveQueue* sq, void* packet, size_t packet_length, uint64_t expected_time) {
+    trudpReceiveQueue* sq, uint8_t* packet, size_t packet_length, uint64_t expected_time) {
     return trudpPacketQueueAdd(sq, packet, packet_length, expected_time);
 }
 
@@ -100,8 +99,8 @@ trudpReceiveQueueData* trudpReceiveQueueAdd(
  * @return Zero at success
  */
 
-int trudpReceiveQueueDelete(trudpReceiveQueue* tq, trudpReceiveQueueData* tqd) {
-    return trudpPacketQueueDelete(tq, tqd);
+void trudpReceiveQueueDelete(trudpReceiveQueue* tq, trudpReceiveQueueData* tqd) {
+    trudpPacketQueueDelete(tq, tqd);
 }
 
 /**

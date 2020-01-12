@@ -59,7 +59,7 @@ trudpSendQueue* trudpSendQueueNew();
  * @return Zero at success
  */
 
-int trudpSendQueueFree(trudpSendQueue* sq);
+void trudpSendQueueFree(trudpSendQueue* sq);
 /**
  * Destroy Send queue
  *
@@ -88,7 +88,7 @@ size_t trudpSendQueueSize(trudpSendQueue* sq);
  */
 
 trudpSendQueueData* trudpSendQueueAdd(
-    trudpSendQueue* sq, void* packet, size_t packet_length, uint64_t expected_time);
+    trudpSendQueue* sq, uint8_t* packet, size_t packet_length, uint64_t expected_time);
 /**
  * Remove element from Send queue
  *
@@ -98,7 +98,7 @@ trudpSendQueueData* trudpSendQueueAdd(
  * @return Zero at success
  */
 
-int trudpSendQueueDelete(trudpSendQueue* sq, trudpSendQueueData* sqd);
+void trudpSendQueueDelete(trudpSendQueue* sq, trudpSendQueueData* sqd);
 /**
  * Find Send queue data by Id
  *

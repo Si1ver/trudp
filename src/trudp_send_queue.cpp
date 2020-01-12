@@ -45,8 +45,8 @@ trudpSendQueue* trudpSendQueueNew() {
  * @return Zero at success
  */
 
-int trudpSendQueueFree(trudpSendQueue* sq) {
-    return trudpPacketQueueFree(sq);
+void trudpSendQueueFree(trudpSendQueue* sq) {
+    trudpPacketQueueFree(sq);
 }
 
 /**
@@ -83,7 +83,7 @@ size_t trudpSendQueueSize(trudpSendQueue* sq) {
  */
 
 trudpSendQueueData* trudpSendQueueAdd(
-    trudpSendQueue* sq, void* packet, size_t packet_length, uint64_t expected_time) {
+    trudpSendQueue* sq, uint8_t* packet, size_t packet_length, uint64_t expected_time) {
     return trudpPacketQueueAdd(sq, packet, packet_length, expected_time);
 }
 
@@ -96,8 +96,8 @@ trudpSendQueueData* trudpSendQueueAdd(
  * @return Zero at success
  */
 
-int trudpSendQueueDelete(trudpSendQueue* sq, trudpSendQueueData* sqd) {
-    return trudpPacketQueueDelete(sq, sqd);
+void trudpSendQueueDelete(trudpSendQueue* sq, trudpSendQueueData* sqd) {
+    trudpPacketQueueDelete(sq, sqd);
 }
 
 /**
@@ -136,9 +136,9 @@ trudpSendQueueData* trudpSendQueueGetFirst(trudpSendQueue* sq) {
 uint32_t trudpSendQueueGetTimeout(trudpSendQueue* sq, uint64_t current_t) {
     // Get sendQueue timeout
     uint32_t timeout_sq = UINT32_MAX;
-    if (sq->q->first) {
-        trudpPacketQueueData* pqd = (trudpPacketQueueData*)sq->q->first->data;
-        timeout_sq = pqd->expected_time > current_t ? pqd->expected_time - current_t : 0;
+    if (!sq->q.empty()) {
+        trudpPacketQueueData& pqd = sq->q.front();
+        timeout_sq = pqd.expected_time > current_t ? pqd.expected_time - current_t : 0;
     }
 
     return timeout_sq;

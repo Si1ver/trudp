@@ -30,6 +30,9 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <list>
+#include <utility>
+
 #include "packet_queue.h"
 #include "packet.h"
 
@@ -41,9 +44,7 @@
  * @return Pointer to trudpPacketQueue
  */
 trudpPacketQueue* trudpPacketQueueNew() {
-    trudpPacketQueue* tq = (trudpPacketQueue*)malloc(sizeof(trudpPacketQueue));
-    tq->q = teoQueueNew();
-    return tq;
+    return new trudpPacketQueue();
 }
 
 /**
@@ -52,9 +53,8 @@ trudpPacketQueue* trudpPacketQueueNew() {
  * @param tq Pointer to trudpPacketQueue
  */
 void trudpPacketQueueDestroy(trudpPacketQueue* tq) {
-    if (tq) {
-        teoQueueDestroy(tq->q);
-        free(tq);
+    if (tq != nullptr) {
+        delete tq;
     }
 }
 /**
@@ -63,8 +63,14 @@ void trudpPacketQueueDestroy(trudpPacketQueue* tq) {
  * @param tq Pointer to trudpPacketQueue
  * @return Zero at success
  */
-int trudpPacketQueueFree(trudpPacketQueue* tq) {
-    return tq && tq->q ? teoQueueFree(tq->q) : -1;
+void trudpPacketQueueFree(trudpPacketQueue* tq) {
+    if (tq == nullptr) {
+        return;
+    }
+
+    // clean queue.
+    std::list<trudpPacketQueueData> new_list;
+    std::swap(tq->q, new_list);
 }
 
 /**
@@ -75,19 +81,12 @@ int trudpPacketQueueFree(trudpPacketQueue* tq) {
  * @return Number of elements in TR-UPD queue
  */
 size_t trudpPacketQueueSize(trudpPacketQueue* tq) {
-    return teoQueueSize(tq->q);
+    return tq->q.size();
 }
 
 trudpPacketQueueData* trudpPacketQueueAdd(
     trudpPacketQueue* tq, void* packet, size_t packet_length, uint64_t expected_time);
-/**
- * Get pointer to trudpQueueData from trudpPacketQueueData pointer
- * @param tqd Pointer to trudpPacketQueueData
- * @return Pointer to trudpQueueData or NULL if tqd is NULL
- */
-teoQueueData* trudpPacketQueueDataToQueueData(trudpPacketQueueData* tqd) {
-    return tqd ? (teoQueueData*)((char*)tqd - sizeof(teoQueueData)) : NULL;
-}
+
 /**
  * Remove element from Packet queue
  *
@@ -96,8 +95,13 @@ teoQueueData* trudpPacketQueueDataToQueueData(trudpPacketQueueData* tqd) {
  *
  * @return Zero at success
  */
-int trudpPacketQueueDelete(trudpPacketQueue* tq, trudpPacketQueueData* tqd) {
-    return teoQueueDelete(tq->q, trudpPacketQueueDataToQueueData(tqd));
+void trudpPacketQueueDelete(trudpPacketQueue* tq, trudpPacketQueueData* tqd) {
+    for (auto it = tq->q.begin(); it != tq->q.end(); ++it) {
+        if (&*it == tqd) {
+            tq->q.erase(it);
+            break;
+        }
+    }
 }
 /**
  * Move element to the end of list
@@ -107,8 +111,21 @@ int trudpPacketQueueDelete(trudpPacketQueue* tq, trudpPacketQueueData* tqd) {
  * @return Zero at success
  */
 trudpPacketQueueData* trudpPacketQueueMoveToEnd(trudpPacketQueue* tq, trudpPacketQueueData* tqd) {
-    return (trudpPacketQueueData*)teoQueueMoveToEnd(tq->q, trudpPacketQueueDataToQueueData(tqd))
-        ->data;
+    if (tq == nullptr || tqd == nullptr) {
+        return nullptr;
+    }
+
+    // Move element to the end of the list, if element is already in the list.
+    for (auto it = tq->q.begin(); it != tq->q.end(); ++it) {
+        if (&*it == tqd) {
+            tq->q.splice(tq->q.end(), tq->q, it);
+            return &tq->q.back();
+        }
+    }
+
+    // Insert element to the end of the list.
+    tq->q.push_back(*tqd);
+    return &tq->q.back();
 }
 
 /**
@@ -122,19 +139,18 @@ trudpPacketQueueData* trudpPacketQueueMoveToEnd(trudpPacketQueue* tq, trudpPacke
  * @return Pointer to added trudpPacketQueueData
  */
 trudpPacketQueueData* trudpPacketQueueAdd(
-    trudpPacketQueue* tq, void* packet, size_t packet_length, uint64_t expected_time) {
-    // Add
-    size_t tqd_length = sizeof(trudpPacketQueueData) + packet_length;
-    trudpPacketQueueData* tqd =
-        (trudpPacketQueueData*)((teoQueueData*)teoQueueAdd(tq->q, NULL, tqd_length))->data;
+    trudpPacketQueue* tq, uint8_t* packet, size_t packet_length, uint64_t expected_time) {
 
-    // Fill data
-    memcpy(tqd->packet, packet, packet_length);
-    tqd->expected_time = expected_time;
-    tqd->packet_length = packet_length;
-    tqd->retrieves = 0;
+    trudpPacketQueueData new_item;
+    new_item.expected_time = expected_time;
+    new_item.packet_length = packet_length;
+    new_item.retrieves = 0;
+    new_item.retrieves_start = 0;
+    new_item.packet.insert(new_item.packet.end(), packet, packet + packet_length);
 
-    return tqd;
+    tq->q.emplace_back(std::move(new_item));
+
+    return &tq->q.back();
 }
 
 /**
@@ -146,23 +162,14 @@ trudpPacketQueueData* trudpPacketQueueAdd(
  * @return Pointer to trudpPacketQueueData or NULL if not found
  */
 trudpPacketQueueData* trudpPacketQueueFindById(trudpPacketQueue* tq, uint32_t id) {
-    trudpPacketQueueData* rv = NULL;
-
-    teoQueueIterator it;
-    teoQueueIteratorReset(&it, tq->q);
-
-    while (teoQueueIteratorNext(&it)) {
-        trudpPacketQueueData* tqd =
-            (trudpPacketQueueData*)((teoQueueData*)teoQueueIteratorElement(&it))->data;
-
-        trudpPacket* trudp_paket = trudpPacketQueueDataGetPacket(tqd);
-        if (trudpPacketGetId(trudp_paket) == id) {
-            rv = tqd;
-            break;
+    for (auto it = tq->q.begin(); it != tq->q.end(); ++it) {
+        trudpPacket* trudp_packet = trudpPacketQueueDataGetPacket(&*it);
+        if (trudpPacketGetId(trudp_packet) == id) {
+            return &*it;
         }
     }
 
-    return rv;
+    return nullptr;
 }
 
 /**
@@ -173,14 +180,13 @@ trudpPacketQueueData* trudpPacketQueueFindById(trudpPacketQueue* tq, uint32_t id
  * @return Pointer to trudpPacketQueueData or NULL if not found
  */
 trudpPacketQueueData* trudpPacketQueueGetFirst(trudpPacketQueue* tq) {
-    trudpPacketQueueData* tqd = NULL;
-
-    teoQueueIterator it;
-    teoQueueIteratorReset(&it, tq->q);
-
-    if (teoQueueIteratorNext(&it)) {
-        tqd = (trudpPacketQueueData*)((teoQueueData*)teoQueueIteratorElement(&it))->data;
+    if (tq == nullptr) {
+        return nullptr;
     }
 
-    return tqd;
+    if (tq->q.size() == 0) {
+        return nullptr;
+    }
+
+    return &tq->q.front();
 }

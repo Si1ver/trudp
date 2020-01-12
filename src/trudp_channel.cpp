@@ -475,14 +475,14 @@ static size_t _trudpChannelSendPacket(
     int sendNowFlag = size_sq < NORMAL_S_SIZE;
     if (size_sq == 1) {
         trudpSendQueueData* data = trudpSendQueueGetFirst(tcd->sendQueue);
-        if (trudpPacketGetId((trudpPacket*)data->packet) == 0)
+        if (trudpPacketGetId((trudpPacket*)data->packet.data()) == 0)
             sendNowFlag = 0;
     }
 
     // Save packet to send queue
     if (save_to_send_queue) {
         if (sendNowFlag) {
-            trudpSendQueueAdd(tcd->sendQueue, packet, packetLength,
+            trudpSendQueueAdd(tcd->sendQueue, (uint8_t*)packet, packetLength,
                 _trudpChannelCalculateExpectedTime(tcd, teoGetTimestampFull(), 0));
             _trudpChannelIncrementStatSendQueueSize(tcd);
         } else {
@@ -715,7 +715,7 @@ void* trudpChannelProcessReceivedPacket(
                 // Save outrunning packet to receiveQueue
                 if (_trudpGetSeqIdDistance(tcd->receiveExpectedId, trudpPacketGetId(packet)) > 0 &&
                     !trudpReceiveQueueFindById(tcd->receiveQueue, trudpPacketGetId(packet))) {
-                    trudpReceiveQueueAdd(tcd->receiveQueue, packet, packet_length, 0);
+                    trudpReceiveQueueAdd(tcd->receiveQueue, (uint8_t*)packet, packet_length, 0);
                     tcd->outrunning_cnt++; // Increment outrunning count
 
                     // Statistic

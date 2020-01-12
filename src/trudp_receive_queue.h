@@ -64,7 +64,7 @@ void trudpReceiveQueueDestroy(trudpReceiveQueue* rq);
  * @return Zero at success
  */
 
-int trudpReceiveQueueFree(trudpReceiveQueue* rq);
+void trudpReceiveQueueFree(trudpReceiveQueue* rq);
 /**
  * Get number of elements in Receive queue
  *
@@ -86,7 +86,7 @@ size_t trudpReceiveQueueSize(trudpReceiveQueue* sq);
  */
 
 trudpReceiveQueueData* trudpReceiveQueueAdd(
-    trudpReceiveQueue* sq, void* packet, size_t packet_length, uint64_t expected_time);
+    trudpReceiveQueue* sq, uint8_t* packet, size_t packet_length, uint64_t expected_time);
 /**
  * Remove element from Receive queue
  *
@@ -96,7 +96,7 @@ trudpReceiveQueueData* trudpReceiveQueueAdd(
  * @return Zero at success
  */
 
-int trudpReceiveQueueDelete(trudpReceiveQueue* tq, trudpReceiveQueueData* tqd);
+void trudpReceiveQueueDelete(trudpReceiveQueue* tq, trudpReceiveQueueData* tqd);
 /**
  * Find Receive queue data by Id
  *
