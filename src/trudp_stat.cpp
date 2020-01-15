@@ -106,12 +106,12 @@ void trudpStatProcessLast10Receive(trudpChannelData* tcd, trudpPacket* packet) {
  */
 typedef struct trudpStat {
     uint32_t packets_send; ///< Total packets send
-    uint32_t ack_receive; ///< Total ACK reseived
-    uint32_t packets_receive; ///< Total packet reseived
-    uint32_t packets_dropped; ///< Total packet droped
+    uint32_t ack_receive; ///< Total ACK received
+    uint32_t packets_receive; ///< Total packet received
+    uint32_t packets_dropped; ///< Total packet dropped
 
-    uint32_t cs_num; ///< Number of chanels
-    trudpStatChannelData cs[]; ///< Cannels statistic
+    uint32_t cs_num; ///< Number of channels
+    trudpStatChannelData cs[]; ///< Channels statistic
 
 } trudpStat;
 
