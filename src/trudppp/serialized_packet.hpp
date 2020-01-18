@@ -5,7 +5,6 @@
 #ifndef TRUDPPP_SERIALIZED_PACKET_HPP
 #define TRUDPPP_SERIALIZED_PACKET_HPP
 
-#include <chrono>
 #include <cstdint>
 #include <iterator>
 #include <stdexcept>
@@ -14,6 +13,7 @@
 
 #include "trudppp/constants.hpp"
 #include "trudppp/packet.hpp"
+#include "trudppp/timestamp.hpp"
 
 namespace trudppp::internal {
 #pragma pack(push)
@@ -100,9 +100,9 @@ namespace trudppp::internal {
         return result;
     }
 
-    uint32_t SerializeTimestamp(std::chrono::system_clock::time_point timestamp);
+    uint32_t SerializeTimestamp(const Timestamp& timestamp);
 
-    std::chrono::system_clock::time_point DeserializeTimestamp(uint32_t timestamp);
+    Timestamp DeserializeTimestamp(uint32_t serialized_timestamp);
 
     std::vector<uint8_t> DeserializePacketData(const std::vector<uint8_t>& received_data);
 

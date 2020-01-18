@@ -1,40 +1,39 @@
 #include "trudppp/serialized_packet.hpp"
 
-#include <iterator>
 #include <cstdint>
+#include <iterator>
 #include <vector>
 
 #include "trudppp/constants.hpp"
+#include "trudppp/timestamp.hpp"
 
 namespace trudppp::internal {
-    uint32_t SerializeTimestamp(std::chrono::system_clock::time_point timestamp) {
-        using namespace std::chrono;
-
-        auto timestmp_us = time_point_cast<microseconds>(timestamp);
-        int64_t time_since_epoch_us = timestmp_us.time_since_epoch().count();
+    uint32_t SerializeTimestamp(const Timestamp& timestamp) {
+        int64_t time_since_epoch_us = timestamp.MicrosecondsSinceEpoch();
 
         // On serialization timestamp is truncated to 32 bits.
         return static_cast<uint32_t>(time_since_epoch_us);
     }
 
-    std::chrono::system_clock::time_point DeserializeTimestamp(uint32_t timestamp) {
-        using namespace std::chrono;
-
+    Timestamp DeserializeTimestamp(uint32_t serialized_timestamp) {
         // Serialized trudppp timestamp is overflowing approximately every hour.
         // To restore original value we assume that packet was sent less than an hour ago.
-        auto now_us = time_point_cast<microseconds>(system_clock::now());
+        Timestamp timestamp;
 
         // Add ten minutes to compensate possible time difference between local and remove hosts.
-        auto reference_time_us = now_us + minutes(10);
+        timestamp.ShiftMinutes(10);
 
-        int64_t reference_time_since_epoch_us = reference_time_us.time_since_epoch().count();
+        int64_t reference_time_since_epoch_us = timestamp.MicrosecondsSinceEpoch();
 
-        uint32_t reference_timestamp = static_cast<uint32_t>(reference_time_since_epoch_us);
+        // On serialization timestamp is truncated to 32 bits.
+        uint32_t reference_serialized_timestamp = static_cast<uint32_t>(reference_time_since_epoch_us);
 
-        // This will work correctly on overflow.
-        uint32_t difference_us = reference_timestamp - timestamp;
+        // Subtraction work correctly even if overflow occurred between two moments.
+        int32_t difference_us = reference_serialized_timestamp - serialized_timestamp;
 
-        return reference_time_us - microseconds(difference_us);
+        timestamp.ShiftMicroseconds(-difference_us);
+
+        return timestamp;
     }
 
     std::vector<uint8_t> DeserializePacketData(const std::vector<uint8_t>& received_data) {
@@ -105,7 +104,7 @@ namespace trudppp::internal {
 
         std::vector<uint8_t> packet_data = DeserializePacketData(received_data);
 
-        auto timestamp = DeserializeTimestamp(packet_header->timestamp);
+        Timestamp timestamp = DeserializeTimestamp(packet_header->timestamp);
 
         return Packet(packet_type, packet_header->channel_number, packet_header->id,
             std::move(packet_data), timestamp);

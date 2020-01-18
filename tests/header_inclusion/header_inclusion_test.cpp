@@ -4,6 +4,7 @@
 #include "trudppp/constants.hpp"
 #include "trudppp/packet.hpp"
 #include "trudppp/service.hpp"
+#include "trudppp/timestamp.hpp"
 
 #include <iostream>
 
@@ -13,6 +14,7 @@ const char* include_connection_stub();
 const char* include_constants_stub();
 const char* include_packet_stub();
 const char* include_service_stub();
+const char* include_timestamp_stub();
 
 int main() {
     std::cout << include_callbacks_stub() << std::endl;
@@ -21,6 +23,7 @@ int main() {
     std::cout << include_constants_stub() << std::endl;
     std::cout << include_packet_stub() << std::endl;
     std::cout << include_service_stub() << std::endl;
+    std::cout << include_timestamp_stub() << std::endl;
 
     return 0;
 }

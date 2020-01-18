@@ -3,9 +3,10 @@
 #ifndef TRUDPPP_PACKET_HPP
 #define TRUDPPP_PACKET_HPP
 
-#include <chrono>
 #include <cstdint>
 #include <vector>
+
+#include "trudppp/timestamp.hpp"
 
 namespace trudppp {
     /// Trudppp packet type.
@@ -34,24 +35,23 @@ namespace trudppp {
         std::vector<uint8_t> data;
 
         /// The moment of time when the packet was sent.
-        std::chrono::system_clock::time_point timestamp;
+        Timestamp timestamp;
 
         Packet& operator=(const Packet&) = delete;
 
     public:
         Packet() : type(PacketType::Data), channel_number(0), id(0) {}
 
-        Packet(PacketType type, uint8_t channel_number, uint32_t id,
-            std::chrono::system_clock::time_point timestamp)
+        Packet(PacketType type, uint8_t channel_number, uint32_t id, const Timestamp& timestamp)
             : type(type), channel_number(channel_number), id(id), timestamp(timestamp) {}
 
         Packet(PacketType type, uint8_t channel_number, uint32_t id,
-            const std::vector<uint8_t>& data, std::chrono::system_clock::time_point timestamp)
+            const std::vector<uint8_t>& data, const Timestamp& timestamp)
             : type(type), channel_number(channel_number), id(id), data(data), timestamp(timestamp) {
         }
 
         Packet(PacketType type, uint8_t channel_number, uint32_t id, std::vector<uint8_t>&& data,
-            std::chrono::system_clock::time_point timestamp)
+            const Timestamp& timestamp)
             : type(type), channel_number(channel_number), id(id), data(std::move(data)),
               timestamp(timestamp) {}
 
@@ -71,17 +71,11 @@ namespace trudppp {
 
         inline const std::vector<uint8_t>& GetData() const { return data; }
 
-        inline std::chrono::system_clock::time_point GetTimestamp() const { return timestamp; }
+        inline const Timestamp& GetTimestamp() const { return timestamp; }
 
-        inline void SetTimestamp(std::chrono::system_clock::time_point new_timestamp) {
-            using namespace std::chrono;
-            timestamp = time_point_cast<microseconds>(new_timestamp);
-        }
+        inline void SetTimestamp(const Timestamp& new_timestamp) { timestamp = new_timestamp; }
 
-        inline void SetTimestampToNow() {
-            using namespace std::chrono;
-            timestamp = time_point_cast<microseconds>(system_clock::now());
-        }
+        inline void SetTimestampToNow() { timestamp.SetToNow(); }
     };
 } // namespace trudppp
 

@@ -1,4 +1,3 @@
-#include <chrono>
 #include <cstdint>
 #include <functional>
 #include <vector>
@@ -8,6 +7,7 @@
 
 #include "trudppp/service.hpp"
 #include "trudppp/serialized_packet.hpp"
+#include "trudppp/timestamp.hpp"
 
 using namespace trudppp;
 
@@ -19,9 +19,9 @@ namespace {
         const uint8_t channel = 1;
         const uint32_t packet_id = 0;
         const std::vector<uint8_t> data = {};
-        const auto now_us = time_point_cast<microseconds>(system_clock::now());
+        const Timestamp timestamp;
 
-        Packet test_packet(packet_type, channel, packet_id, data, now_us);
+        Packet test_packet(packet_type, channel, packet_id, data, timestamp);
 
         return std::move(internal::SerializePacket(test_packet));
     }

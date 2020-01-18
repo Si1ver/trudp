@@ -135,6 +135,9 @@
     <ClInclude Include="..\..\include\trudppp\service.hpp">
       <Filter>trudppp\include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\trudppp\timestamp.hpp">
+      <Filter>trudppp\include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\libs\teoccl\src\teoccl\array_list.c">

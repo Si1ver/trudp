@@ -1,5 +1,4 @@
 #include <algorithm>
-#include <chrono>
 #include <cstdint>
 #include <vector>
 
@@ -8,16 +7,11 @@
 
 #include "trudppp/channel.hpp"
 #include "trudppp/packet.hpp"
+#include "trudppp/timestamp.hpp"
 
 using namespace trudppp;
 
 namespace {
-    using namespace std::chrono;
-
-    system_clock::time_point GetTimeNowUs() {
-        return time_point_cast<microseconds>(system_clock::now());
-    }
-
     const uint8_t kChannelNumber = 0;
 
     struct ChannelTestHelper {
@@ -56,7 +50,7 @@ MATCHER_P(PacketIsEqual, packet, "") { \
 TEST(ChannelSendTest, SendData) {
     ChannelTestHelper test_helper;
 
-    auto timestamp = GetTimeNowUs();
+    Timestamp timestamp;
     const std::vector<uint8_t> packet_data = {1, 2, 3, 4, 5};
 
     const Packet data_packet(PacketType::Data, kChannelNumber, 0, packet_data, timestamp);
@@ -81,7 +75,7 @@ TEST(ChannelSendTest, SendData) {
 TEST(ChannelSendTest, SendPing) {
     ChannelTestHelper test_helper;
 
-    auto timestamp = GetTimeNowUs();
+    Timestamp timestamp;
     const std::vector<uint8_t> packet_data = {1, 2, 3, 4, 5};
 
     const Packet ping_packet(PacketType::Ping, kChannelNumber, 0, packet_data, timestamp);
@@ -105,7 +99,7 @@ TEST(ChannelSendTest, SendPing) {
 TEST(ChannelSendTest, SendReset) {
     ChannelTestHelper test_helper;
 
-    auto timestamp = GetTimeNowUs();
+    Timestamp timestamp;
     const std::vector<uint8_t> packet_data = {1, 2, 3, 4, 5};
 
     const Packet reset_packet(PacketType::Reset, kChannelNumber, 0, packet_data, timestamp);
@@ -129,9 +123,11 @@ TEST(ChannelSendTest, SendReset) {
 TEST(ChannelSendTest, ReceiveOutOfOrder) {
     ChannelTestHelper test_helper;
 
-    auto timestamp2 = GetTimeNowUs();
-    auto timestamp1 = timestamp2 - milliseconds(10);
-    auto timestamp0 = timestamp1 - milliseconds(20);
+    Timestamp timestamp2;
+    Timestamp timestamp1(timestamp2);
+    timestamp1.ShiftMicroseconds(-10);
+    Timestamp timestamp0(timestamp1);
+    timestamp0.ShiftMicroseconds(-20);
 
     const std::vector<uint8_t> packet1_data = {1, 2, 3, 4, 5};
     const std::vector<uint8_t> packet2_data = {5, 4, 3, 2, 1, 0};

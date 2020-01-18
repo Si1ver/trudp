@@ -25,6 +25,7 @@
     <ClInclude Include="..\..\include\trudppp\constants.hpp" />
     <ClInclude Include="..\..\include\trudppp\packet.hpp" />
     <ClInclude Include="..\..\include\trudppp\service.hpp" />
+    <ClInclude Include="..\..\include\trudppp\timestamp.hpp" />
     <ClInclude Include="..\..\libs\teobase\include\teobase\api.h" />
     <ClInclude Include="..\..\libs\teobase\include\teobase\logging.h" />
     <ClInclude Include="..\..\libs\teobase\include\teobase\mutex.h" />
@@ -59,11 +60,36 @@
     <ClCompile Include="..\..\libs\teobase\src\teobase\mutex.c" />
     <ClCompile Include="..\..\libs\teobase\src\teobase\socket.c" />
     <ClCompile Include="..\..\libs\teobase\src\teobase\time.c" />
-    <ClCompile Include="..\..\libs\teoccl\src\teoccl\array_list.c" />
-    <ClCompile Include="..\..\libs\teoccl\src\teoccl\hash.c" />
-    <ClCompile Include="..\..\libs\teoccl\src\teoccl\map.c" />
-    <ClCompile Include="..\..\libs\teoccl\src\teoccl\memory.c" />
-    <ClCompile Include="..\..\libs\teoccl\src\teoccl\queue.c" />
+    <ClCompile Include="..\..\libs\teoccl\src\teoccl\array_list.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\teoccl\src\teoccl\hash.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\teoccl\src\teoccl\map.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\teoccl\src\teoccl\memory.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\libs\teoccl\src\teoccl\queue.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\src\packet_legacy.cpp" />
     <ClCompile Include="..\..\src\packet_queue.cpp" />
     <ClCompile Include="..\..\src\trudp.cpp" />

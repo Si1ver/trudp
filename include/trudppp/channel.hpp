@@ -3,7 +3,6 @@
 #ifndef TRUDPPP_CHANNEL_HPP
 #define TRUDPPP_CHANNEL_HPP
 
-#include <chrono>
 #include <cstdint>
 #include <functional>
 #include <list>
@@ -12,6 +11,7 @@
 
 #include <trudppp/callbacks.hpp>
 #include <trudppp/packet.hpp>
+#include <trudppp/timestamp.hpp>
 
 namespace trudppp {
     struct SentPacketItem {
@@ -20,9 +20,9 @@ namespace trudppp {
         SentPacketItem& operator=(const SentPacketItem&) = delete;
 
     public:
-        std::chrono::system_clock::time_point expected_time;
+        Timestamp expected_time;
         uint32_t retry_count;
-        std::chrono::system_clock::time_point next_retry_time;
+        Timestamp next_retry_time;
         Packet packet;
 
         SentPacketItem(SentPacketItem&& other) noexcept
@@ -36,15 +36,14 @@ namespace trudppp {
         ReceivedPacketItem& operator=(const ReceivedPacketItem&) = delete;
 
     public:
-        std::chrono::system_clock::time_point receive_timestamp;
+        Timestamp receive_timestamp;
         Packet packet;
 
         ReceivedPacketItem(
-            std::chrono::system_clock::time_point receive_timestamp, const Packet& packet)
+            const Timestamp& receive_timestamp, const Packet& packet)
             : receive_timestamp(receive_timestamp), packet(packet) {}
 
-        ReceivedPacketItem(
-            std::chrono::system_clock::time_point receive_timestamp, Packet&& packet) noexcept
+        ReceivedPacketItem(const Timestamp& receive_timestamp, Packet&& packet) noexcept
             : receive_timestamp(receive_timestamp), packet(std::move(packet)) {}
 
         ReceivedPacketItem(ReceivedPacketItem&& other) noexcept
@@ -130,8 +129,7 @@ namespace trudppp {
 
     public:
         Channel(const Settings& settings)
-            : channel_number(settings.channel_number), next_send_id(0),
-              expected_receive_id(0) {
+            : channel_number(settings.channel_number), next_send_id(0), expected_receive_id(0) {
             callbacks.data_received = settings.data_received_callback;
             callbacks.packet_send_requested = settings.packet_send_requested_callback;
             callbacks.channel_reset = settings.channel_reset_callback;

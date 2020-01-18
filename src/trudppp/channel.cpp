@@ -111,13 +111,11 @@ namespace trudppp {
                     auto existing_item = received_packets.find(packet_id);
 
                     if (existing_item == received_packets.end()) {
-                        auto receive_timestamp_us =
-                            std::chrono::time_point_cast<std::chrono::microseconds>(
-                                std::chrono::system_clock::now());
+                        Timestamp receive_timestamp;
 
                         received_packets.emplace(std::piecewise_construct,
                             std::make_tuple(packet_id),
-                            std::forward_as_tuple(receive_timestamp_us, received_packet));
+                            std::forward_as_tuple(receive_timestamp, received_packet));
                     }
 
                     break;

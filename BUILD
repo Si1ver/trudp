@@ -57,6 +57,7 @@ cc_library(
         "include/trudppp/constants.hpp",
         "include/trudppp/packet.hpp",
         "include/trudppp/service.hpp",
+        "include/trudppp/timestamp.hpp",
     ],
     includes = ["include", "src"],
 )
@@ -85,6 +86,7 @@ cc_test(
         "tests/header_inclusion/include_constants_hpp_test.cpp",
         "tests/header_inclusion/include_packet_hpp_test.cpp",
         "tests/header_inclusion/include_service_hpp_test.cpp",
+        "tests/header_inclusion/include_timestamp_hpp_test.cpp",
     ],
 )
 

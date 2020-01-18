@@ -1,4 +1,3 @@
-#include <chrono>
 #include <cstdint>
 #include <vector>
 
@@ -7,33 +6,33 @@
 
 #include "trudppp/constants.hpp"
 #include "trudppp/serialized_packet.hpp"
+#include "trudppp/timestamp.hpp"
 
 using namespace trudppp;
 
+MATCHER_P(TimestampIsEqual, timestamp, "") { return arg == timestamp; }
+
 TEST(SerializedPacketTest, TimestampRoundtrip) {
-    using namespace std::chrono;
+    Timestamp now;
 
-    auto now_us = time_point_cast<microseconds>(system_clock::now());
+    uint32_t serialized_now = internal::SerializeTimestamp(now);
 
-    uint32_t serialized_now = internal::SerializeTimestamp(now_us);
+    Timestamp deserialized_timestamp = internal::DeserializeTimestamp(serialized_now);
 
-    auto deserialized_timestamp = internal::DeserializeTimestamp(serialized_now);
-
-    EXPECT_EQ(deserialized_timestamp, now_us);
+    EXPECT_THAT(deserialized_timestamp, TimestampIsEqual(now));
 }
 
 TEST(SerializedPacketTest, TimestampConsistense) {
-    using namespace std::chrono;
+    Timestamp now;
 
-    auto now_us = time_point_cast<microseconds>(system_clock::now());
+    uint32_t serialized_now = internal::SerializeTimestamp(now);
 
-    uint32_t serialized_now = internal::SerializeTimestamp(now_us);
+    const int64_t advancement = 1000;
 
-    const uint32_t advancement = 1000;
+    Timestamp advanced_now(now);
+    advanced_now.ShiftMicroseconds(advancement);
 
-    auto advanced_now_us = now_us + microseconds(advancement);
-
-    uint32_t serialized_advanced_now = internal::SerializeTimestamp(advanced_now_us);
+    uint32_t serialized_advanced_now = internal::SerializeTimestamp(advanced_now);
 
     EXPECT_EQ(serialized_advanced_now - serialized_now, advancement);
 }
@@ -63,15 +62,13 @@ TEST(SerializedPacketTest, DeserializeEmptyData) {
 }
 
 TEST(SerializedPacketTest, PacketRoundtrip) {
-    using namespace std::chrono;
-
     const PacketType packet_type = PacketType::Ping;
     const uint8_t channel = 1;
     const uint32_t packet_id = 10;
     const std::vector<uint8_t> data = {1, 2, 0, 7, 255};
-    const auto now_us = time_point_cast<microseconds>(system_clock::now());
+    const Timestamp timestamp;
 
-    Packet original_packet(packet_type, channel, packet_id, data, now_us);
+    Packet original_packet(packet_type, channel, packet_id, data, timestamp);
 
     const std::vector<uint8_t> serialized_packet = internal::SerializePacket(original_packet);
 
@@ -85,5 +82,5 @@ TEST(SerializedPacketTest, PacketRoundtrip) {
     EXPECT_EQ(deserialized_packet.GetChannelNumber(), channel);
     EXPECT_EQ(deserialized_packet.GetId(), packet_id);
     EXPECT_THAT(deserialized_packet.GetData(), testing::ElementsAreArray(data));
-    EXPECT_EQ(deserialized_packet.GetTimestamp(), now_us);
+    EXPECT_THAT(deserialized_packet.GetTimestamp(), TimestampIsEqual(timestamp));
 }
