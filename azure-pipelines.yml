@@ -28,3 +28,15 @@ jobs:
   - script: |
       bazel version
       bazel test ...
+- job: test_macos_bazel
+  pool:
+    vmImage: 'macOS-10.14'
+  steps:
+  - checkout: self
+    submodules: false
+  - bash: |
+      brew tap bazelbuild/tap
+      brew install bazelbuild/tap/bazel
+  - bash: |
+      bazel version
+      bazel test ...
