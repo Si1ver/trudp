@@ -7,19 +7,19 @@ namespace trudppp {
     Packet Channel::CreateAckPacket(const Packet& received_packet) const {
         switch (received_packet.GetType()) {
             case PacketType::Ping: {
-                return std::move(Packet(PacketType::AckOnPing, received_packet.GetChannelNumber(),
+                return Packet(PacketType::AckOnPing, received_packet.GetChannelNumber(),
                     received_packet.GetId(), received_packet.GetData(),
-                    received_packet.GetTimestamp()));
+                    received_packet.GetTimestamp());
             }
 
             case PacketType::Data: {
-                return std::move(Packet(PacketType::Ack, received_packet.GetChannelNumber(),
-                    received_packet.GetId(), received_packet.GetTimestamp()));
+                return Packet(PacketType::Ack, received_packet.GetChannelNumber(),
+                    received_packet.GetId(), received_packet.GetTimestamp());
             }
 
             case PacketType::Reset: {
-                return std::move(Packet(PacketType::AckOnReset, received_packet.GetChannelNumber(),
-                    received_packet.GetId(), received_packet.GetTimestamp()));
+                return Packet(PacketType::AckOnReset, received_packet.GetChannelNumber(),
+                    received_packet.GetId(), received_packet.GetTimestamp());
             }
 
             default:

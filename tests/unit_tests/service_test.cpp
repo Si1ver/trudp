@@ -23,7 +23,7 @@ namespace {
 
         Packet test_packet(packet_type, channel, packet_id, data, timestamp);
 
-        return std::move(internal::SerializePacket(test_packet));
+        return internal::SerializePacket(test_packet);
     }
 
     class TestEndpoint {

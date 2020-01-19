@@ -43,7 +43,7 @@ namespace trudppp::internal {
 
         auto data_end = received_data.cend();
 
-        return std::move(std::vector<uint8_t>(data_begin, data_end));
+        return std::vector<uint8_t>(data_begin, data_end);
     }
 
     uint8_t CalculatePacketHeaderChecksum(const std::vector<uint8_t>& received_data) {
@@ -138,6 +138,6 @@ namespace trudppp::internal {
             buffer.insert(buffer.end(), packet_data.cbegin(), packet_data.cend());
         }
 
-        return std::move(buffer);
+        return buffer;
     }
 } // namespace trudppp::internal
