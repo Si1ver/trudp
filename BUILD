@@ -114,3 +114,27 @@ cc_test(
     ],
     includes = ["src"],
 )
+
+cc_test(
+    name = "legacy_test",
+    copts = select({
+        ":windows": ["/std:c++17"],
+        "//conditions:default": ["-std=c++17"],
+    }),
+    deps = [
+        ":trudppp",
+        "@teobase//:teobase",
+#        "@teoccl//:teoccl",
+        "@googletest//:gtest_main",
+    ],
+    linkopts = select({
+        ":windows": ["ws2_32.lib"],
+        "//conditions:default": ["-pthread"],
+    }),
+    size = "small",
+    srcs = [
+        "tests/legacy/packet_queue_test.cpp",
+        "tests/legacy/packet_test.cpp",
+        "tests/legacy/trudp_test.cpp",
+    ],
+)
