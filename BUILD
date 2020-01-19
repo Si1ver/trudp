@@ -31,8 +31,6 @@ cc_library(
         "src/trudp_channel.cpp",
         "src/trudp_channel.h",
         "src/trudp_const.h",
-        "src/trudp_ev.c",
-        "src/trudp_ev.h",
         "src/trudp_options.cpp",
         "src/trudp_options.h",
         "src/trudp_receive_queue.cpp",
