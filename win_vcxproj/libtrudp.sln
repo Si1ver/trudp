@@ -10,6 +10,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "legacy_test", "legacy_test\
 		{92A32E51-A60D-4F5F-8F2F-D29B5C85AA4E} = {92A32E51-A60D-4F5F-8F2F-D29B5C85AA4E}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "header_inclusion_test", "header_inclusion_test\header_inclusion_test.vcxproj", "{453FB8B9-BE95-492F-93FA-8ED4740352EB}"
+	ProjectSection(ProjectDependencies) = postProject
+		{92A32E51-A60D-4F5F-8F2F-D29B5C85AA4E} = {92A32E51-A60D-4F5F-8F2F-D29B5C85AA4E}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -34,6 +39,14 @@ Global
 		{47FA60A2-EAC7-44D2-8C43-BE766EC6D0F8}.Release|x64.Build.0 = Release|x64
 		{47FA60A2-EAC7-44D2-8C43-BE766EC6D0F8}.Release|x86.ActiveCfg = Release|Win32
 		{47FA60A2-EAC7-44D2-8C43-BE766EC6D0F8}.Release|x86.Build.0 = Release|Win32
+		{453FB8B9-BE95-492F-93FA-8ED4740352EB}.Debug|x64.ActiveCfg = Debug|x64
+		{453FB8B9-BE95-492F-93FA-8ED4740352EB}.Debug|x64.Build.0 = Debug|x64
+		{453FB8B9-BE95-492F-93FA-8ED4740352EB}.Debug|x86.ActiveCfg = Debug|Win32
+		{453FB8B9-BE95-492F-93FA-8ED4740352EB}.Debug|x86.Build.0 = Debug|Win32
+		{453FB8B9-BE95-492F-93FA-8ED4740352EB}.Release|x64.ActiveCfg = Release|x64
+		{453FB8B9-BE95-492F-93FA-8ED4740352EB}.Release|x64.Build.0 = Release|x64
+		{453FB8B9-BE95-492F-93FA-8ED4740352EB}.Release|x86.ActiveCfg = Release|Win32
+		{453FB8B9-BE95-492F-93FA-8ED4740352EB}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

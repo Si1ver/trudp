@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\..\tests\header_inclusion\header_inclusion_test.cpp" />
+    <ClCompile Include="..\..\tests\header_inclusion\include_callbacks_hpp_test.cpp" />
+    <ClCompile Include="..\..\tests\header_inclusion\include_channel_hpp_test.cpp" />
+    <ClCompile Include="..\..\tests\header_inclusion\include_connection_hpp_test.cpp" />
+    <ClCompile Include="..\..\tests\header_inclusion\include_constants_hpp_test.cpp" />
+    <ClCompile Include="..\..\tests\header_inclusion\include_packet_hpp_test.cpp" />
+    <ClCompile Include="..\..\tests\header_inclusion\include_service_hpp_test.cpp" />
+    <ClCompile Include="..\..\tests\header_inclusion\include_timestamp_hpp_test.cpp" />
+  </ItemGroup>
+</Project>
