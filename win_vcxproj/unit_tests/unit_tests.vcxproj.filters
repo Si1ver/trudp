@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\..\tests\unit_tests\channel_send_test.cpp" />
+    <ClCompile Include="..\..\tests\unit_tests\connection_events_test.cpp" />
+    <ClCompile Include="..\..\tests\unit_tests\packet_serialization_test.cpp" />
+    <ClCompile Include="..\..\tests\unit_tests\service_test.cpp" />
+  </ItemGroup>
+</Project>
