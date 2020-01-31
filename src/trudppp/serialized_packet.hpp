@@ -66,7 +66,7 @@ namespace trudppp::internal {
         }
     }
 
-    uint8_t constexpr SerializedPacketTypeIsValid(uint8_t serialized_packet_type) {
+    bool constexpr SerializedPacketTypeIsValid(uint8_t serialized_packet_type) {
         // Expand to underlying type of enumeration.
         std::underlying_type_t<PacketType> serialized_value = serialized_packet_type;
 
