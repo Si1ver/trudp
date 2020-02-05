@@ -21,7 +21,7 @@ namespace trudppp {
             };
 
             settings.packet_send_requested_callback = [channel_number, this](
-                                                          const Packet& packet_to_send) {
+                                                          Packet&& packet_to_send) {
                 std::vector<uint8_t> serialized_packet = internal::SerializePacket(packet_to_send);
                 callbacks.EmitDataSendRequested(*this, channel_number, serialized_packet);
             };

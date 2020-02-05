@@ -91,15 +91,22 @@ namespace trudppp {
 
                 sent_packets.erase(sent_packet_it);
 
-                //if we got ack for 0 packet, we can send up to kMaxSentPackets packets
-                if (!scheduled_packets.empty()) {
-                    auto data = scheduled_packets.front();
+                // if we got ack for 0 packet, we can send up to kMaxSentPackets packets
+                // else we have one more place in send queue, so take only one packet from write queue
+                auto max_scheduled_packets_sent = received_packet.GetId() == 0 ? kMaxSentPackets : 1;
+                auto scheduled_packets_sent = 0;
+
+                while (!scheduled_packets.empty() && scheduled_packets_sent <= max_scheduled_packets_sent) {
+                    auto scheduled_packet = std::move(scheduled_packets.front());
                     scheduled_packets.pop();
 
-                    //TODO: send data through send queue
+                    SendTrudpPacket(std::move(scheduled_packet.packet));
                 }
 
-                //TODO: recalc triptime for this channel
+                UpdateTriptime(received_packet);
+
+                //TODO: update timestamp when channel should be triggered again to resend lost packets
+                //TODO: stat
                 break;
             }
 
@@ -113,7 +120,7 @@ namespace trudppp {
 
             case PacketType::Ping: {
                 Packet ack_packet = CreateAckPacket(received_packet);
-                callbacks.EmitSendPacketRequested(ack_packet);
+                callbacks.EmitSendPacketRequested(std::move(ack_packet));
 
                 // TODO: Event: ping received.
 
@@ -122,7 +129,7 @@ namespace trudppp {
 
             case PacketType::Data: {
                 Packet ack_packet = CreateAckPacket(received_packet);
-                callbacks.EmitSendPacketRequested(ack_packet);
+                callbacks.EmitSendPacketRequested(std::move(ack_packet));
 
                 // TODO: Debug packet dump.
 
@@ -185,7 +192,7 @@ namespace trudppp {
 
             case PacketType::Reset: {
                 Packet ack_packet = CreateAckPacket(received_packet);
-                callbacks.EmitSendPacketRequested(ack_packet);
+                callbacks.EmitSendPacketRequested(std::move(ack_packet));
 
                 Reset();
 
@@ -198,18 +205,16 @@ namespace trudppp {
         }
     }
 
-    void Channel::SendData(const std::vector<uint8_t>& received_data) {
+    void Channel::SendData(std::vector<uint8_t>&& received_data) {
         //TODO: maybe we can move data here?
-        auto packet = Packet(PacketType::Data, channel_number, next_send_id, received_data, Timestamp());
+        auto packet = Packet(PacketType::Data, channel_number, next_send_id, std::move(received_data), Timestamp());
 
         next_send_id = IncrementPacketId(next_send_id);
 
-        SendTrudpPacket(packet);
+        SendTrudpPacket(std::move(packet));
     }
 
-    void Channel::SendTrudpPacket(const Packet& packet) {
-        //TODO: we should check whether the packet is reliable or not first
-
+    void Channel::SendTrudpPacket(Packet&& packet) {
         auto current_send_queue_size = sent_packets.size();
 
         bool send_now = current_send_queue_size < kMaxSentPackets;
@@ -220,14 +225,11 @@ namespace trudppp {
         }
 
         if (send_now) {
-            //TODO: maybe we can move packet here
-            auto expected_ts = ExpectedTimestamp(packet);
-            //TODO: next retry ts???
-            SentPacketItem sent_item(packet, expected_ts, expected_ts);
-            sent_packets.emplace_back(std::move(sent_item));
+            callbacks.EmitSendPacketRequested(std::move(packet));
         } else {
-
+            scheduled_packets.emplace(std::move(packet));
         }
 
+        //TODO: stat
     }
 } // namespace trudppp

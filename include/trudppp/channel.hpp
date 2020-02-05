@@ -58,12 +58,27 @@ namespace trudppp {
             : receive_timestamp(other.receive_timestamp), packet(std::move(other.packet)) {}
     };
 
+    struct ScheduledPacketItem {
+    private:
+
+        ScheduledPacketItem(const ScheduledPacketItem&) = delete;
+        ScheduledPacketItem& operator=(const ScheduledPacketItem&) = delete;
+    public:
+        Packet packet;
+
+        ~ScheduledPacketItem() = default;
+        ScheduledPacketItem(ScheduledPacketItem&&) = default;
+        ScheduledPacketItem& operator=(ScheduledPacketItem&&) = default;
+
+        explicit ScheduledPacketItem(Packet&& packet_) noexcept : packet(std::move(packet_)) {}
+    };
+
     class Channel {
     public:
         // TODO(new): add receive_timestamp.
         typedef void DataReceivedCallback(
             const std::vector<uint8_t>& received_data, bool is_reliable);
-        typedef void PacketSendRequestedCallback(const Packet& packet_to_send);
+        typedef void PacketSendRequestedCallback(Packet&& packet_to_send);
         typedef void ChannelResetCallback();
         typedef void AckReceivedCallback(uint32_t packet_id);
 
@@ -88,9 +103,9 @@ namespace trudppp {
                 }
             }
 
-            inline void EmitSendPacketRequested(const Packet& packet_to_send) const {
+            inline void EmitSendPacketRequested(Packet&& packet_to_send) const {
                 if (packet_send_requested) {
-                    packet_send_requested(packet_to_send);
+                    packet_send_requested(std::move(packet_to_send));
                 }
             }
 
@@ -109,8 +124,8 @@ namespace trudppp {
 
     private:
         typedef std::list<SentPacketItem> SentPacketsType;
-        typedef std::queue<void*> ScheduledPacketsType;
-        typedef std::map<uint32_t, ReceivedPacketItem> ReceivedPacketsType;
+        typedef std::queue<ScheduledPacketItem> ScheduledPacketsType;
+        typedef std::unordered_map<uint32_t, ReceivedPacketItem> ReceivedPacketsType;
 
         const uint8_t channel_number;
 
@@ -134,7 +149,7 @@ namespace trudppp {
 
         void Reset();
 
-        void SendTrudpPacket(const Packet& packet);
+        void SendTrudpPacket(Packet&& packet);
 
         inline void UpdateTriptime(const Packet& received_packet);
         inline Timestamp ExpectedTimestamp(const Packet& packet);
@@ -164,7 +179,7 @@ namespace trudppp {
         // TODO: add receive_timestamp.
         void ProcessReceivedPacket(const Packet& received_packet);
 
-        void SendData(const std::vector<uint8_t>& received_data);
+        void SendData(std::vector<uint8_t>&& data);
 
         // TODO(new): Use trudp header for unreliable packets.
         void ProcessReceivedUnreliableData(const std::vector<uint8_t>& received_data) {
