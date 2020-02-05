@@ -19,7 +19,7 @@ namespace trudppp {
         typedef void DataReceivedCallback(Connection& connection, uint8_t channel_number,
             const std::vector<uint8_t>& received_data, bool is_reliable);
         typedef void DataSendRequestedCallback(Connection& connection, uint8_t channel_number,
-            const std::vector<uint8_t>& data_to_send);
+            Packet&& packet_to_send);
 
         std::function<ConnectionInitializedCallback> connection_initialized;
         std::function<ConnectionDestroyedCallback> connection_destroyed;
@@ -46,9 +46,9 @@ namespace trudppp {
         }
 
         inline void EmitDataSendRequested(Connection& connection, uint8_t channel_number,
-            const std::vector<uint8_t>& data_to_send) const {
+            Packet&& packet_to_send) const {
             if (data_send_requested) {
-                data_send_requested(connection, channel_number, data_to_send);
+                data_send_requested(connection, channel_number, std::move(packet_to_send));
             }
         }
     };

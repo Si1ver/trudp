@@ -92,9 +92,9 @@ namespace trudppp::internal {
         return true;
     }
 
-    Packet DeserializePacket(const std::vector<uint8_t>& received_data) {
+    PacketInternal DeserializePacket(const std::vector<uint8_t>& received_data) {
         if (!CheckBufferIsValidPacket(received_data)) {
-            return Packet();
+            return PacketInternal();
         }
 
         const SerializedPacketHeader* packet_header =
@@ -106,11 +106,11 @@ namespace trudppp::internal {
 
         Timestamp timestamp = DeserializeTimestamp(packet_header->timestamp);
 
-        return Packet(packet_type, packet_header->channel_number, packet_header->id,
+        return PacketInternal(packet_type, packet_header->channel_number, packet_header->id,
             std::move(packet_data), timestamp);
     }
 
-    std::vector<uint8_t> SerializePacket(const Packet& packet) {
+    std::vector<uint8_t> SerializePacket(const PacketInternal& packet) {
         const std::vector<uint8_t>& packet_data = packet.GetData();
 
         const size_t packet_data_length = packet_data.size();

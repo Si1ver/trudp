@@ -20,7 +20,7 @@ namespace trudppp {
     };
 
     /// Trudppp packet.
-    class Packet {
+    class PacketInternal {
     private:
         /// The type of the packet.
         PacketType type;
@@ -37,29 +37,29 @@ namespace trudppp {
         /// The moment of time when the packet was sent.
         Timestamp timestamp;
 
-        Packet& operator=(const Packet&) = delete;
+        PacketInternal& operator=(const PacketInternal&) = delete;
 
     public:
-        Packet() : type(PacketType::Data), channel_number(0), id(0) {}
+        PacketInternal() : type(PacketType::Data), channel_number(0), id(0) {}
 
-        Packet(PacketType type, uint8_t channel_number, uint32_t id, const Timestamp& timestamp)
+        PacketInternal(PacketType type, uint8_t channel_number, uint32_t id, const Timestamp& timestamp)
             : type(type), channel_number(channel_number), id(id), timestamp(timestamp) {}
 
-        Packet(PacketType type, uint8_t channel_number, uint32_t id,
+        PacketInternal(PacketType type, uint8_t channel_number, uint32_t id,
             const std::vector<uint8_t>& data, const Timestamp& timestamp)
             : type(type), channel_number(channel_number), id(id), data(data), timestamp(timestamp) {
         }
 
-        Packet(PacketType type, uint8_t channel_number, uint32_t id, std::vector<uint8_t>&& data,
+        PacketInternal(PacketType type, uint8_t channel_number, uint32_t id, std::vector<uint8_t>&& data,
             const Timestamp& timestamp)
             : type(type), channel_number(channel_number), id(id), data(std::move(data)),
               timestamp(timestamp) {}
 
-        Packet(const Packet& other)
+        PacketInternal(const PacketInternal& other)
             : type(other.type), channel_number(other.channel_number), id(other.id),
               data(other.data), timestamp(other.timestamp) {}
 
-        Packet(Packet&& other) noexcept
+        PacketInternal(PacketInternal&& other) noexcept
             : type(other.type), channel_number(other.channel_number), id(other.id),
               data(std::move(other.data)), timestamp(other.timestamp) {}
 
@@ -76,6 +76,24 @@ namespace trudppp {
         inline void SetTimestamp(const Timestamp& new_timestamp) { timestamp = new_timestamp; }
 
         inline void SetTimestampToNow() { timestamp.SetToNow(); }
+    };
+
+    //Trudppp owning packet wrapper for client side usage
+    class Packet
+    {
+        friend class Connection;
+    public:
+        explicit Packet(PacketInternal&& packet_) : packet(std::move(packet_)) {}
+        ~Packet() = default;
+        Packet(const Packet&) = delete;
+        Packet(Packet&&) = default;
+
+        Packet& operator=(const Packet&) = delete;
+        Packet& operator=(Packet&&) = default;
+
+        std::vector<uint8_t> Serialize() const;
+    private:
+        PacketInternal packet;
     };
 } // namespace trudppp
 

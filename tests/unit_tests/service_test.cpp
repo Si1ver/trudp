@@ -21,7 +21,7 @@ namespace {
         const std::vector<uint8_t> data = {};
         const Timestamp timestamp;
 
-        Packet test_packet(packet_type, channel, packet_id, data, timestamp);
+        PacketInternal test_packet(packet_type, channel, packet_id, data, timestamp);
 
         return internal::SerializePacket(test_packet);
     }

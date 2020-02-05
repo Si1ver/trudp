@@ -10,6 +10,7 @@
 
 #include "trudppp/callbacks.hpp"
 #include "trudppp/channel.hpp"
+#include "trudppp/packet.hpp"
 
 namespace trudppp {
     class Connection {
@@ -25,7 +26,7 @@ namespace trudppp {
         Connection& operator=(const Connection&) = delete;
 
         Channel& GetOrCreateChannel(int channel_number);
-
+        Channel* GetChannel(int channel_number);
     public:
         Connection(const Callbacks& callbacks) : callbacks(callbacks) {
             callbacks.EmitConnectionInitialized(*this);
@@ -38,6 +39,8 @@ namespace trudppp {
         }
 
         void ProcessReceivedData(const std::vector<uint8_t>& received_data);
+        void SendData(int channel_number, std::vector<uint8_t>&& data);
+        void OnPacketSent(Timestamp send_time, Packet&& packet);
     };
 } // namespace trudppp
 

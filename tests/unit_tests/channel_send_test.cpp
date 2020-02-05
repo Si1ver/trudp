@@ -16,7 +16,7 @@ namespace {
 
     struct ChannelTestHelper {
         std::vector<std::vector<uint8_t>> data_received_calls;
-        std::vector<Packet> packet_send_requested_calls;
+        std::vector<PacketInternal> packet_send_requested_calls;
 
         Channel::Settings settings;
 
@@ -28,7 +28,7 @@ namespace {
                 data_received_calls.emplace_back(received_data);
             };
 
-            settings.packet_send_requested_callback = [this](const Packet& packet_to_send) {
+            settings.packet_send_requested_callback = [this](const PacketInternal& packet_to_send) {
                 packet_send_requested_calls.emplace_back(packet_to_send);
             };
         }
@@ -53,8 +53,8 @@ TEST(ChannelSendTest, SendData) {
     Timestamp timestamp;
     const std::vector<uint8_t> packet_data = {1, 2, 3, 4, 5};
 
-    const Packet data_packet(PacketType::Data, kChannelNumber, 0, packet_data, timestamp);
-    const Packet ack_packet(PacketType::Ack, kChannelNumber, 0, packet_data, timestamp);
+    const PacketInternal data_packet(PacketType::Data, kChannelNumber, 0, packet_data, timestamp);
+    const PacketInternal ack_packet(PacketType::Ack, kChannelNumber, 0, packet_data, timestamp);
 
     {
         Channel channel(test_helper.settings);
@@ -78,8 +78,8 @@ TEST(ChannelSendTest, SendPing) {
     Timestamp timestamp;
     const std::vector<uint8_t> packet_data = {1, 2, 3, 4, 5};
 
-    const Packet ping_packet(PacketType::Ping, kChannelNumber, 0, packet_data, timestamp);
-    const Packet ack_packet(PacketType::AckOnPing, kChannelNumber, 0, timestamp);
+    const PacketInternal ping_packet(PacketType::Ping, kChannelNumber, 0, packet_data, timestamp);
+    const PacketInternal ack_packet(PacketType::AckOnPing, kChannelNumber, 0, timestamp);
 
     {
         Channel channel(test_helper.settings);
@@ -102,8 +102,8 @@ TEST(ChannelSendTest, SendReset) {
     Timestamp timestamp;
     const std::vector<uint8_t> packet_data = {1, 2, 3, 4, 5};
 
-    const Packet reset_packet(PacketType::Reset, kChannelNumber, 0, packet_data, timestamp);
-    const Packet ack_packet(PacketType::AckOnReset, kChannelNumber, 0, timestamp);
+    const PacketInternal reset_packet(PacketType::Reset, kChannelNumber, 0, packet_data, timestamp);
+    const PacketInternal ack_packet(PacketType::AckOnReset, kChannelNumber, 0, timestamp);
 
     {
         Channel channel(test_helper.settings);
@@ -132,13 +132,13 @@ TEST(ChannelSendTest, ReceiveOutOfOrder) {
     const std::vector<uint8_t> packet1_data = {1, 2, 3, 4, 5};
     const std::vector<uint8_t> packet2_data = {5, 4, 3, 2, 1, 0};
 
-    const Packet data0_packet(PacketType::Data, kChannelNumber, 0, timestamp0);
-    const Packet data1_packet(PacketType::Data, kChannelNumber, 1, packet1_data, timestamp1);
-    const Packet data2_packet(PacketType::Data, kChannelNumber, 2, packet2_data, timestamp2);
+    const PacketInternal data0_packet(PacketType::Data, kChannelNumber, 0, timestamp0);
+    const PacketInternal data1_packet(PacketType::Data, kChannelNumber, 1, packet1_data, timestamp1);
+    const PacketInternal data2_packet(PacketType::Data, kChannelNumber, 2, packet2_data, timestamp2);
 
-    const Packet ack0_packet(PacketType::Ack, kChannelNumber, 0, timestamp0);
-    const Packet ack1_packet(PacketType::Ack, kChannelNumber, 1, timestamp1);
-    const Packet ack2_packet(PacketType::Ack, kChannelNumber, 2, timestamp2);
+    const PacketInternal ack0_packet(PacketType::Ack, kChannelNumber, 0, timestamp0);
+    const PacketInternal ack1_packet(PacketType::Ack, kChannelNumber, 1, timestamp1);
+    const PacketInternal ack2_packet(PacketType::Ack, kChannelNumber, 2, timestamp2);
 
     {
         Channel channel(test_helper.settings);

@@ -110,8 +110,8 @@ namespace trudppp::internal {
 
     bool CheckBufferIsValidPacket(const std::vector<uint8_t>& received_data);
 
-    Packet DeserializePacket(const std::vector<uint8_t>& received_data);
+    PacketInternal DeserializePacket(const std::vector<uint8_t>& received_data);
 
-    std::vector<uint8_t> SerializePacket(const Packet& packet);
+    std::vector<uint8_t> SerializePacket(const PacketInternal& packet);
 } // namespace trudppp::internal
 #endif

@@ -4,21 +4,21 @@
 #include <utility>
 
 namespace trudppp {
-    Packet Channel::CreateAckPacket(const Packet& received_packet) const {
+    PacketInternal Channel::CreateAckPacket(const PacketInternal& received_packet) const {
         switch (received_packet.GetType()) {
             case PacketType::Ping: {
-                return Packet(PacketType::AckOnPing, received_packet.GetChannelNumber(),
+                return PacketInternal(PacketType::AckOnPing, received_packet.GetChannelNumber(),
                     received_packet.GetId(), received_packet.GetData(),
                     received_packet.GetTimestamp());
             }
 
             case PacketType::Data: {
-                return Packet(PacketType::Ack, received_packet.GetChannelNumber(),
+                return PacketInternal(PacketType::Ack, received_packet.GetChannelNumber(),
                     received_packet.GetId(), received_packet.GetTimestamp());
             }
 
             case PacketType::Reset: {
-                return Packet(PacketType::AckOnReset, received_packet.GetChannelNumber(),
+                return PacketInternal(PacketType::AckOnReset, received_packet.GetChannelNumber(),
                     received_packet.GetId(), received_packet.GetTimestamp());
             }
 
@@ -27,7 +27,7 @@ namespace trudppp {
         }
     }
 
-    void Channel::UpdateTriptime(const Packet& received_packet) {
+    void Channel::UpdateTriptime(const PacketInternal& received_packet) {
         auto now = Timestamp();
         triptime = now.MicrosecondsSinceEpoch() - received_packet.GetTimestamp().MicrosecondsSinceEpoch();
 
@@ -50,14 +50,12 @@ namespace trudppp {
         //TODO: stats
     }
 
-    Timestamp Channel::ExpectedTimestamp(const Packet& packet) {
+    Timestamp Channel::ExpectedTimestamp(Timestamp send_time, const PacketInternal& packet) {
         auto rtt = std::min(kMaxRTTUs, triptime_middle + kRTTMagicNumberUs);
 
-        Timestamp expected_ts;
+        send_time.ShiftMicroseconds(rtt);
 
-        expected_ts.ShiftMicroseconds(rtt);
-
-        return expected_ts;
+        return send_time;
     }
 
     void Channel::Reset() {
@@ -77,7 +75,7 @@ namespace trudppp {
         std::swap(received_packets, new_received_packets);
     }
 
-    void Channel::ProcessReceivedPacket(const Packet& received_packet) {
+    void Channel::ProcessReceivedPacket(const PacketInternal& received_packet) {
         switch (received_packet.GetType()) {
             case PacketType::Ack: {
                 auto sent_packet_it = std::find_if(std::begin(sent_packets), std::end(sent_packets),
@@ -96,16 +94,18 @@ namespace trudppp {
                 auto max_scheduled_packets_sent = received_packet.GetId() == 0 ? kMaxSentPackets : 1;
                 auto scheduled_packets_sent = 0;
 
-                while (!scheduled_packets.empty() && scheduled_packets_sent <= max_scheduled_packets_sent) {
+                while (!scheduled_packets.empty() && scheduled_packets_sent < max_scheduled_packets_sent) {
                     auto scheduled_packet = std::move(scheduled_packets.front());
                     scheduled_packets.pop();
 
                     SendTrudpPacket(std::move(scheduled_packet.packet));
+                    scheduled_packets_sent++;
                 }
 
                 UpdateTriptime(received_packet);
 
-                //TODO: update timestamp when channel should be triggered again to resend lost packets
+                next_trigger_time = sent_packets.empty() ? std::optional<Timestamp>{} :
+                    sent_packets.front().expected_time;
                 //TODO: stat
                 break;
             }
@@ -119,7 +119,7 @@ namespace trudppp {
             }
 
             case PacketType::Ping: {
-                Packet ack_packet = CreateAckPacket(received_packet);
+                PacketInternal ack_packet = CreateAckPacket(received_packet);
                 callbacks.EmitSendPacketRequested(std::move(ack_packet));
 
                 // TODO: Event: ping received.
@@ -128,7 +128,7 @@ namespace trudppp {
             }
 
             case PacketType::Data: {
-                Packet ack_packet = CreateAckPacket(received_packet);
+                PacketInternal ack_packet = CreateAckPacket(received_packet);
                 callbacks.EmitSendPacketRequested(std::move(ack_packet));
 
                 // TODO: Debug packet dump.
@@ -153,7 +153,7 @@ namespace trudppp {
                         auto existing_item = received_packets.find(expected_receive_id);
 
                         while (existing_item != received_packets.end()) {
-                            const Packet& packet = existing_item->second.packet;
+                            const PacketInternal& packet = existing_item->second.packet;
                             callbacks.EmitDataReceived(packet.GetData(), true);
 
                             received_packets.erase(existing_item);
@@ -191,7 +191,7 @@ namespace trudppp {
             }
 
             case PacketType::Reset: {
-                Packet ack_packet = CreateAckPacket(received_packet);
+                PacketInternal ack_packet = CreateAckPacket(received_packet);
                 callbacks.EmitSendPacketRequested(std::move(ack_packet));
 
                 Reset();
@@ -207,14 +207,14 @@ namespace trudppp {
 
     void Channel::SendData(std::vector<uint8_t>&& received_data) {
         //TODO: maybe we can move data here?
-        auto packet = Packet(PacketType::Data, channel_number, next_send_id, std::move(received_data), Timestamp());
+        auto packet = PacketInternal(PacketType::Data, channel_number, next_send_id, std::move(received_data), Timestamp());
 
         next_send_id = IncrementPacketId(next_send_id);
 
         SendTrudpPacket(std::move(packet));
     }
 
-    void Channel::SendTrudpPacket(Packet&& packet) {
+    void Channel::SendTrudpPacket(PacketInternal&& packet) {
         auto current_send_queue_size = sent_packets.size();
 
         bool send_now = current_send_queue_size < kMaxSentPackets;
@@ -231,5 +231,17 @@ namespace trudppp {
         }
 
         //TODO: stat
+    }
+
+    void Channel::OnPacketSent(Timestamp send_time, PacketInternal&& packet) {
+        auto expected_timestamp = ExpectedTimestamp(send_time, packet);
+
+        SentPacketItem sent_packet(std::move(packet), expected_timestamp);
+
+        if (!next_trigger_time.has_value()) {
+            next_trigger_time = expected_timestamp;
+        }
+
+        sent_packets.emplace_back(std::move(sent_packet));
     }
 } // namespace trudppp

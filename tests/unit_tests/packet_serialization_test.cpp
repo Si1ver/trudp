@@ -68,7 +68,7 @@ TEST(SerializedPacketTest, PacketRoundtrip) {
     const std::vector<uint8_t> data = {1, 2, 0, 7, 255};
     const Timestamp timestamp;
 
-    Packet original_packet(packet_type, channel, packet_id, data, timestamp);
+    PacketInternal original_packet(packet_type, channel, packet_id, data, timestamp);
 
     const std::vector<uint8_t> serialized_packet = internal::SerializePacket(original_packet);
 
@@ -76,7 +76,7 @@ TEST(SerializedPacketTest, PacketRoundtrip) {
 
     ASSERT_TRUE(buffer_is_valid_packet);
 
-    Packet deserialized_packet = internal::DeserializePacket(serialized_packet);
+    PacketInternal deserialized_packet = internal::DeserializePacket(serialized_packet);
 
     EXPECT_EQ(deserialized_packet.GetType(), packet_type);
     EXPECT_EQ(deserialized_packet.GetChannelNumber(), channel);

@@ -8,6 +8,7 @@
 #include <list>
 #include <map>
 #include <queue>
+#include <optional>
 
 #include <trudppp/callbacks.hpp>
 #include <trudppp/packet.hpp>
@@ -23,18 +24,16 @@ namespace trudppp {
     public:
         Timestamp expected_time;
         uint32_t retry_count = 0;
-        Packet packet;
+        PacketInternal packet;
 
         SentPacketItem(SentPacketItem&& other) noexcept
             : expected_time(other.expected_time), retry_count(other.retry_count),
               packet(std::move(other.packet)) {}
 
-        SentPacketItem(Packet&& packet_, const Timestamp& expected_time_,
-            const Timestamp& next_retry_time_)
-            : expected_time(expected_time_), packet(packet_) {}
+        SentPacketItem(PacketInternal&& packet_, const Timestamp& expected_time_)
+            : expected_time(expected_time_), packet(std::move(packet_)) {}
 
-        SentPacketItem(const Packet& packet_, const Timestamp& expected_time_,
-            const Timestamp& next_retry_time_)
+        SentPacketItem(const PacketInternal& packet_, const Timestamp& expected_time_)
             : expected_time(expected_time_), packet(packet_) {}
     };
 
@@ -45,13 +44,13 @@ namespace trudppp {
 
     public:
         Timestamp receive_timestamp;
-        Packet packet;
+        PacketInternal packet;
 
         ReceivedPacketItem(
-            const Timestamp& receive_timestamp, const Packet& packet)
+            const Timestamp& receive_timestamp, const PacketInternal& packet)
             : receive_timestamp(receive_timestamp), packet(packet) {}
 
-        ReceivedPacketItem(const Timestamp& receive_timestamp, Packet&& packet) noexcept
+        ReceivedPacketItem(const Timestamp& receive_timestamp, PacketInternal&& packet) noexcept
             : receive_timestamp(receive_timestamp), packet(std::move(packet)) {}
 
         ReceivedPacketItem(ReceivedPacketItem&& other) noexcept
@@ -64,13 +63,13 @@ namespace trudppp {
         ScheduledPacketItem(const ScheduledPacketItem&) = delete;
         ScheduledPacketItem& operator=(const ScheduledPacketItem&) = delete;
     public:
-        Packet packet;
+        PacketInternal packet;
 
         ~ScheduledPacketItem() = default;
         ScheduledPacketItem(ScheduledPacketItem&&) = default;
         ScheduledPacketItem& operator=(ScheduledPacketItem&&) = default;
 
-        explicit ScheduledPacketItem(Packet&& packet_) noexcept : packet(std::move(packet_)) {}
+        explicit ScheduledPacketItem(PacketInternal&& packet_) noexcept : packet(std::move(packet_)) {}
     };
 
     class Channel {
@@ -78,7 +77,7 @@ namespace trudppp {
         // TODO(new): add receive_timestamp.
         typedef void DataReceivedCallback(
             const std::vector<uint8_t>& received_data, bool is_reliable);
-        typedef void PacketSendRequestedCallback(Packet&& packet_to_send);
+        typedef void PacketSendRequestedCallback(PacketInternal&& packet_to_send);
         typedef void ChannelResetCallback();
         typedef void AckReceivedCallback(uint32_t packet_id);
 
@@ -103,7 +102,7 @@ namespace trudppp {
                 }
             }
 
-            inline void EmitSendPacketRequested(Packet&& packet_to_send) const {
+            inline void EmitSendPacketRequested(PacketInternal&& packet_to_send) const {
                 if (packet_send_requested) {
                     packet_send_requested(std::move(packet_to_send));
                 }
@@ -129,10 +128,12 @@ namespace trudppp {
 
         const uint8_t channel_number;
 
+        std::optional<Timestamp> next_trigger_time;
+
         Callbacks callbacks;
 
-        uint32_t next_send_id;
-        uint32_t expected_receive_id;
+        uint32_t next_send_id = 0;
+        uint32_t expected_receive_id = 0;
 
         SentPacketsType sent_packets;
         ScheduledPacketsType scheduled_packets;
@@ -145,14 +146,14 @@ namespace trudppp {
         Channel(const Channel&) = delete;
         Channel& operator=(const Channel&) = delete;
 
-        Packet CreateAckPacket(const Packet& received_packet) const;
+        PacketInternal CreateAckPacket(const PacketInternal& received_packet) const;
 
         void Reset();
 
-        void SendTrudpPacket(Packet&& packet);
+        void SendTrudpPacket(PacketInternal&& packet);
 
-        inline void UpdateTriptime(const Packet& received_packet);
-        inline Timestamp ExpectedTimestamp(const Packet& packet);
+        inline void UpdateTriptime(const PacketInternal& received_packet);
+        inline Timestamp ExpectedTimestamp(Timestamp send_time, const PacketInternal& packet);
 
         inline uint32_t IncrementPacketId(uint32_t id) {
             ++id;
@@ -177,14 +178,17 @@ namespace trudppp {
         // inline uint32_t GetCurrentSendId() const { return next_send_id; }
 
         // TODO: add receive_timestamp.
-        void ProcessReceivedPacket(const Packet& received_packet);
+        void ProcessReceivedPacket(const PacketInternal& received_packet);
 
         void SendData(std::vector<uint8_t>&& data);
+        void OnPacketSent(Timestamp send_time, PacketInternal&& packet);
 
         // TODO(new): Use trudp header for unreliable packets.
         void ProcessReceivedUnreliableData(const std::vector<uint8_t>& received_data) {
             callbacks.EmitDataReceived(received_data, false);
         }
+
+        std::optional<Timestamp> NextTriggerTime() const { return next_trigger_time; }
     };
 } // namespace trudppp
 

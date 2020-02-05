@@ -14,6 +14,7 @@
 #include "trudppp/packet.hpp"
 
 namespace trudppp {
+
     template <class TEndpoint>
     class Service {
     public:
@@ -29,7 +30,7 @@ namespace trudppp {
                 data_received_callback;
 
             std::function<void(Connection& connection, uint8_t channel_number,
-                const std::vector<uint8_t>& data_to_send)>
+                Packet&& packet_to_send)>
                 data_send_requested_callback;
         };
 
