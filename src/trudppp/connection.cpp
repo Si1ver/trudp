@@ -54,7 +54,8 @@ namespace trudppp {
 
             Channel& channel = GetOrCreateChannel(channel_number);
 
-            channel.ProcessReceivedPacket(received_packet);
+            // NOTE: Maybe we want to pass timestamp from the client side?
+            channel.ProcessReceivedPacket(Timestamp(), received_packet);
         } else {
             // Received data is not a valid trudp packet.
             // Assuming it is unreliable packet for channel 0.

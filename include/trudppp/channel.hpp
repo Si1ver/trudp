@@ -135,7 +135,7 @@ namespace trudppp {
         uint32_t next_send_id = 0;
         uint32_t expected_receive_id = 0;
 
-        SentPacketsType sent_packets;
+        SentPacketsType sent_packets;//sorted by packet id list of sent packets, packets with smaller numbers go last
         ScheduledPacketsType scheduled_packets;
 
         ReceivedPacketsType received_packets;
@@ -152,8 +152,10 @@ namespace trudppp {
 
         void SendTrudpPacket(PacketInternal&& packet);
 
-        inline void UpdateTriptime(const PacketInternal& received_packet);
+        inline void UpdateTriptime(Timestamp receive_time, const PacketInternal& received_packet);
         inline Timestamp ExpectedTimestamp(Timestamp send_time, const PacketInternal& packet);
+        inline std::optional<Timestamp> PickNextTriggerTime() const;
+        inline void TriggerSendQueue(Timestamp trigger_time);
 
         inline uint32_t IncrementPacketId(uint32_t id) {
             ++id;
@@ -178,7 +180,7 @@ namespace trudppp {
         // inline uint32_t GetCurrentSendId() const { return next_send_id; }
 
         // TODO: add receive_timestamp.
-        void ProcessReceivedPacket(const PacketInternal& received_packet);
+        void ProcessReceivedPacket(Timestamp receive_time, const PacketInternal& received_packet);
 
         void SendData(std::vector<uint8_t>&& data);
         void OnPacketSent(Timestamp send_time, PacketInternal&& packet);
@@ -189,6 +191,9 @@ namespace trudppp {
         }
 
         std::optional<Timestamp> NextTriggerTime() const { return next_trigger_time; }
+
+        //resend first packet from send queue, return next trigger time
+        std::optional<Timestamp> Trigger(Timestamp trigger_time);
     };
 } // namespace trudppp
 

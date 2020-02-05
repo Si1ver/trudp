@@ -27,9 +27,8 @@ namespace trudppp {
         }
     }
 
-    void Channel::UpdateTriptime(const PacketInternal& received_packet) {
-        auto now = Timestamp();
-        triptime = now.MicrosecondsSinceEpoch() - received_packet.GetTimestamp().MicrosecondsSinceEpoch();
+    void Channel::UpdateTriptime(Timestamp receive_time, const PacketInternal& received_packet) {
+        triptime = receive_time.MicrosecondsSinceEpoch() - received_packet.GetTimestamp().MicrosecondsSinceEpoch();
 
         // Calculate and set Middle Triptime value
         triptime_middle = triptime_middle == kStartMiddleTimeUs
@@ -58,6 +57,10 @@ namespace trudppp {
         return send_time;
     }
 
+    std::optional<Timestamp> Channel::PickNextTriggerTime() const {
+        return sent_packets.empty() ? std::optional<Timestamp>{} : sent_packets.back().expected_time;
+    }
+
     void Channel::Reset() {
         callbacks.EmitChannelReset();
 
@@ -75,7 +78,7 @@ namespace trudppp {
         std::swap(received_packets, new_received_packets);
     }
 
-    void Channel::ProcessReceivedPacket(const PacketInternal& received_packet) {
+    void Channel::ProcessReceivedPacket(Timestamp receive_time, const PacketInternal& received_packet) {
         switch (received_packet.GetType()) {
             case PacketType::Ack: {
                 auto sent_packet_it = std::find_if(std::begin(sent_packets), std::end(sent_packets),
@@ -102,10 +105,9 @@ namespace trudppp {
                     scheduled_packets_sent++;
                 }
 
-                UpdateTriptime(received_packet);
+                UpdateTriptime(receive_time, received_packet);
 
-                next_trigger_time = sent_packets.empty() ? std::optional<Timestamp>{} :
-                    sent_packets.front().expected_time;
+                next_trigger_time = PickNextTriggerTime();
                 //TODO: stat
                 break;
             }
@@ -242,6 +244,36 @@ namespace trudppp {
             next_trigger_time = expected_timestamp;
         }
 
-        sent_packets.emplace_back(std::move(sent_packet));
+        auto queue_place_it = std::upper_bound(std::begin(sent_packets), std::end(sent_packets), packet.GetId(),
+            [](uint32_t id, const SentPacketItem& sent_packet) { return sent_packet.packet.GetId() > id; });
+
+        sent_packets.insert(queue_place_it, std::move(sent_packet));
+    }
+
+    std::optional<Timestamp> Channel::Trigger(Timestamp trigger_time) {
+        if (sent_packets.empty()) {
+            next_trigger_time = std::nullopt;
+        } else {
+            TriggerSendQueue(trigger_time);
+        }
+
+        return next_trigger_time;
+    }
+
+    void Channel::TriggerSendQueue(Timestamp trigger_time) {
+        // TODO: this check ported from legacy code, do we really need it?
+        // or maybe add ForceTrigger method, which ignores this check
+        auto& first_packet_to_resend = sent_packets.back();
+        if (first_packet_to_resend.expected_time > trigger_time) {
+            next_trigger_time = first_packet_to_resend.expected_time;
+        } else {
+            auto packet_to_send = std::move(sent_packets.back());
+            //TODO: here we lose all info contained in SentPacketItem, e.g. retry num
+            sent_packets.pop_back();
+
+            callbacks.EmitSendPacketRequested(std::move(packet_to_send.packet));
+
+            next_trigger_time = PickNextTriggerTime();
+        }
     }
 } // namespace trudppp

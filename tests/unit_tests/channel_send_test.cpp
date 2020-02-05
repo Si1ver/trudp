@@ -62,7 +62,7 @@ TEST(ChannelSendTest, SendData) {
         EXPECT_THAT(test_helper.data_received_calls, testing::IsEmpty());
         EXPECT_THAT(test_helper.packet_send_requested_calls, testing::IsEmpty());
 
-        channel.ProcessReceivedPacket(data_packet);
+        channel.ProcessReceivedPacket(Timestamp(), data_packet);
 
         ASSERT_THAT(test_helper.data_received_calls, testing::SizeIs(1));
         EXPECT_THAT(test_helper.data_received_calls[0], testing::ElementsAreArray(packet_data));
@@ -87,7 +87,7 @@ TEST(ChannelSendTest, SendPing) {
         EXPECT_THAT(test_helper.data_received_calls, testing::IsEmpty());
         EXPECT_THAT(test_helper.packet_send_requested_calls, testing::IsEmpty());
 
-        channel.ProcessReceivedPacket(ping_packet);
+        channel.ProcessReceivedPacket(Timestamp(), ping_packet);
 
         EXPECT_THAT(test_helper.data_received_calls, testing::IsEmpty());
 
@@ -111,7 +111,7 @@ TEST(ChannelSendTest, SendReset) {
         EXPECT_THAT(test_helper.data_received_calls, testing::IsEmpty());
         EXPECT_THAT(test_helper.packet_send_requested_calls, testing::IsEmpty());
 
-        channel.ProcessReceivedPacket(reset_packet);
+        channel.ProcessReceivedPacket(Timestamp(), reset_packet);
 
         EXPECT_THAT(test_helper.data_received_calls, testing::IsEmpty());
 
@@ -146,7 +146,12 @@ TEST(ChannelSendTest, ReceiveOutOfOrder) {
         EXPECT_THAT(test_helper.data_received_calls, testing::IsEmpty());
         EXPECT_THAT(test_helper.packet_send_requested_calls, testing::IsEmpty());
 
-        channel.ProcessReceivedPacket(data0_packet);
+        Timestamp data0_timestamp, data1_timestamp, data2_timestamp;
+
+        data1_timestamp.ShiftMilliseconds(2);
+        data2_timestamp.ShiftMilliseconds(1);
+
+        channel.ProcessReceivedPacket(data0_timestamp, data0_packet);
 
         ASSERT_THAT(test_helper.data_received_calls, testing::SizeIs(1));
         EXPECT_THAT(test_helper.data_received_calls[0], testing::IsEmpty());
@@ -154,14 +159,14 @@ TEST(ChannelSendTest, ReceiveOutOfOrder) {
         ASSERT_THAT(test_helper.packet_send_requested_calls, testing::SizeIs(1));
         EXPECT_THAT(test_helper.packet_send_requested_calls[0], PacketIsEqual(ack0_packet));
 
-        channel.ProcessReceivedPacket(data2_packet);
+        channel.ProcessReceivedPacket(data2_timestamp, data2_packet);
 
         ASSERT_THAT(test_helper.data_received_calls, testing::SizeIs(1));
 
         ASSERT_THAT(test_helper.packet_send_requested_calls, testing::SizeIs(2));
         EXPECT_THAT(test_helper.packet_send_requested_calls[1], PacketIsEqual(ack2_packet));
 
-        channel.ProcessReceivedPacket(data1_packet);
+        channel.ProcessReceivedPacket(data1_timestamp, data1_packet);
 
         ASSERT_THAT(test_helper.data_received_calls, testing::SizeIs(3));
         EXPECT_THAT(test_helper.data_received_calls[1], testing::ElementsAreArray(packet1_data));
