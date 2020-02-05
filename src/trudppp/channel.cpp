@@ -27,6 +27,39 @@ namespace trudppp {
         }
     }
 
+    void Channel::UpdateTriptime(const Packet& received_packet) {
+        auto now = Timestamp();
+        triptime = now.MicrosecondsSinceEpoch() - received_packet.GetTimestamp().MicrosecondsSinceEpoch();
+
+        // Calculate and set Middle Triptime value
+        triptime_middle = triptime_middle == kStartMiddleTimeUs
+            ? triptime * kTriptimeFactor
+            : // Set first middle time
+            triptime > triptime_middle ? triptime * kTriptimeFactor
+                                                : // Set middle time to max triptime
+                (triptime_middle * 19 + triptime) / 20.0; // Calculate middle value
+
+        // Correct triptimeMiddle
+        if (triptime_middle < triptime * kTriptimeFactor)
+            triptime_middle = triptime * kTriptimeFactor;
+        if (triptime_middle > triptime * 10)
+            triptime_middle = triptime * 10;
+        if (triptime_middle > kMaxTriptimeMiddle)
+            triptime_middle = kMaxTriptimeMiddle;
+
+        //TODO: stats
+    }
+
+    Timestamp Channel::ExpectedTimestamp(const Packet& packet) {
+        auto rtt = std::min(kMaxRTTUs, triptime_middle + kRTTMagicNumberUs);
+
+        Timestamp expected_ts;
+
+        expected_ts.ShiftMicroseconds(rtt);
+
+        return expected_ts;
+    }
+
     void Channel::Reset() {
         callbacks.EmitChannelReset();
 
@@ -47,6 +80,26 @@ namespace trudppp {
     void Channel::ProcessReceivedPacket(const Packet& received_packet) {
         switch (received_packet.GetType()) {
             case PacketType::Ack: {
+                auto sent_packet_it = std::find_if(std::begin(sent_packets), std::end(sent_packets),
+                    [packet_id = received_packet.GetId()](const SentPacketsType::value_type& sent_packet) {
+                        return sent_packet.packet.GetId();
+                    });
+
+                if (sent_packet_it == std::end(sent_packets)) return;//TODO:???
+
+                callbacks.EmitAckReceived(received_packet.GetId());
+
+                sent_packets.erase(sent_packet_it);
+
+                //if we got ack for 0 packet, we can send up to kMaxSentPackets packets
+                if (!scheduled_packets.empty()) {
+                    auto data = scheduled_packets.front();
+                    scheduled_packets.pop();
+
+                    //TODO: send data through send queue
+                }
+
+                //TODO: recalc triptime for this channel
                 break;
             }
 
@@ -146,6 +199,35 @@ namespace trudppp {
     }
 
     void Channel::SendData(const std::vector<uint8_t>& received_data) {
+        //TODO: maybe we can move data here?
+        auto packet = Packet(PacketType::Data, channel_number, next_send_id, received_data, Timestamp());
+
+        next_send_id = IncrementPacketId(next_send_id);
+
+        SendTrudpPacket(packet);
+    }
+
+    void Channel::SendTrudpPacket(const Packet& packet) {
+        //TODO: we should check whether the packet is reliable or not first
+
+        auto current_send_queue_size = sent_packets.size();
+
+        bool send_now = current_send_queue_size < kMaxSentPackets;
+
+        // if we are still connecting, do not send anything
+        if (current_send_queue_size == 1 && sent_packets.front().packet.GetId() == 0) {
+            send_now = false;
+        }
+
+        if (send_now) {
+            //TODO: maybe we can move packet here
+            auto expected_ts = ExpectedTimestamp(packet);
+            //TODO: next retry ts???
+            SentPacketItem sent_item(packet, expected_ts, expected_ts);
+            sent_packets.emplace_back(std::move(sent_item));
+        } else {
+
+        }
 
     }
 } // namespace trudppp

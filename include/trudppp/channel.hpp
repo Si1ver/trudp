@@ -12,6 +12,7 @@
 #include <trudppp/callbacks.hpp>
 #include <trudppp/packet.hpp>
 #include <trudppp/timestamp.hpp>
+#include <trudppp/constants.hpp>
 
 namespace trudppp {
     struct SentPacketItem {
@@ -21,13 +22,20 @@ namespace trudppp {
 
     public:
         Timestamp expected_time;
-        uint32_t retry_count;
-        Timestamp next_retry_time;
+        uint32_t retry_count = 0;
         Packet packet;
 
         SentPacketItem(SentPacketItem&& other) noexcept
             : expected_time(other.expected_time), retry_count(other.retry_count),
-              next_retry_time(other.next_retry_time), packet(std::move(other.packet)) {}
+              packet(std::move(other.packet)) {}
+
+        SentPacketItem(Packet&& packet_, const Timestamp& expected_time_,
+            const Timestamp& next_retry_time_)
+            : expected_time(expected_time_), packet(packet_) {}
+
+        SentPacketItem(const Packet& packet_, const Timestamp& expected_time_,
+            const Timestamp& next_retry_time_)
+            : expected_time(expected_time_), packet(packet_) {}
     };
 
     struct ReceivedPacketItem {
@@ -57,6 +65,7 @@ namespace trudppp {
             const std::vector<uint8_t>& received_data, bool is_reliable);
         typedef void PacketSendRequestedCallback(const Packet& packet_to_send);
         typedef void ChannelResetCallback();
+        typedef void AckReceivedCallback(uint32_t packet_id);
 
         struct Settings {
             uint8_t channel_number;
@@ -70,6 +79,7 @@ namespace trudppp {
             std::function<DataReceivedCallback> data_received;
             std::function<PacketSendRequestedCallback> packet_send_requested;
             std::function<ChannelResetCallback> channel_reset;
+            std::function<AckReceivedCallback> ack_received;
 
             inline void EmitDataReceived(
                 const std::vector<uint8_t>& received_data, bool is_reliable) const {
@@ -87,6 +97,12 @@ namespace trudppp {
             inline void EmitChannelReset() const {
                 if (channel_reset) {
                     channel_reset();
+                }
+            }
+
+            inline void EmitAckReceived(uint32_t packet_id) const {
+                if (ack_received) {
+                    ack_received(packet_id);
                 }
             }
         };
@@ -108,12 +124,20 @@ namespace trudppp {
 
         ReceivedPacketsType received_packets;
 
+        uint32_t triptime = 0;
+        uint32_t triptime_middle = kStartMiddleTimeUs;
+
         Channel(const Channel&) = delete;
         Channel& operator=(const Channel&) = delete;
 
         Packet CreateAckPacket(const Packet& received_packet) const;
 
         void Reset();
+
+        void SendTrudpPacket(const Packet& packet);
+
+        inline void UpdateTriptime(const Packet& received_packet);
+        inline Timestamp ExpectedTimestamp(const Packet& packet);
 
         inline uint32_t IncrementPacketId(uint32_t id) {
             ++id;

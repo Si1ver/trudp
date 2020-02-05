@@ -82,3 +82,4 @@ ipch/
 
 /.vscode/**
 /bazel-*/**
+bazel-*

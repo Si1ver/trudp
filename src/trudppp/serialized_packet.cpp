@@ -140,4 +140,5 @@ namespace trudppp::internal {
 
         return buffer;
     }
+
 } // namespace trudppp::internal
