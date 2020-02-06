@@ -113,10 +113,20 @@ namespace trudppp {
             }
 
             case PacketType::AckOnReset: {
+                callbacks.EmitChannelResetAckReceived(channel_number);
+
+                Reset();
+
+                //TODO: stat
                 break;
             }
 
             case PacketType::AckOnPing: {
+                // Calculate Triptime
+                UpdateTriptime(receive_time, received_packet);
+                //TODO: stats
+
+                callbacks.EmitPingAckReceived(channel_number);
                 break;
             }
 
@@ -124,8 +134,7 @@ namespace trudppp {
                 PacketInternal ack_packet = CreateAckPacket(received_packet);
                 callbacks.EmitSendPacketRequested(std::move(ack_packet));
 
-                // TODO: Event: ping received.
-
+                callbacks.EmitPingReceived(channel_number);
                 break;
             }
 

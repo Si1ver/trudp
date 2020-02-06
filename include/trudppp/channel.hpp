@@ -80,6 +80,9 @@ namespace trudppp {
         typedef void PacketSendRequestedCallback(PacketInternal&& packet_to_send);
         typedef void ChannelResetCallback();
         typedef void AckReceivedCallback(uint32_t packet_id);
+        typedef void ResetAckReceivedCallback(uint8_t channel_id);
+        typedef void PingAckReceivedCallback(uint8_t channel_id);
+        typedef void PingReceivedCallback(uint8_t channel_id);
 
         struct Settings {
             uint8_t channel_number;
@@ -87,6 +90,10 @@ namespace trudppp {
             std::function<DataReceivedCallback> data_received_callback;
             std::function<PacketSendRequestedCallback> packet_send_requested_callback;
             std::function<ChannelResetCallback> channel_reset_callback;
+            std::function<AckReceivedCallback> ack_received_callback;
+            std::function<ResetAckReceivedCallback> reset_ack_received_callback;
+            std::function<PingAckReceivedCallback> ping_ack_received_callback;
+            std::function<PingReceivedCallback> ping_received_callback;
         };
 
         struct Callbacks {
@@ -94,6 +101,9 @@ namespace trudppp {
             std::function<PacketSendRequestedCallback> packet_send_requested;
             std::function<ChannelResetCallback> channel_reset;
             std::function<AckReceivedCallback> ack_received;
+            std::function<ResetAckReceivedCallback> reset_ack_received;
+            std::function<PingAckReceivedCallback> ping_ack_received;
+            std::function<PingReceivedCallback> ping_received;
 
             inline void EmitDataReceived(
                 const std::vector<uint8_t>& received_data, bool is_reliable) const {
@@ -117,6 +127,24 @@ namespace trudppp {
             inline void EmitAckReceived(uint32_t packet_id) const {
                 if (ack_received) {
                     ack_received(packet_id);
+                }
+            }
+
+            inline void EmitChannelResetAckReceived(uint8_t channel_id) const {
+                if (reset_ack_received) {
+                    reset_ack_received(channel_id);
+                }
+            }
+
+            inline void EmitPingAckReceived(uint8_t channel_id) const {
+                if (ping_ack_received) {
+                    ping_ack_received(channel_id);
+                }
+            }
+
+            inline void EmitPingReceived(uint8_t channel_id) const {
+                if (ping_received) {
+                    ping_received(channel_id);
                 }
             }
         };
@@ -175,6 +203,10 @@ namespace trudppp {
             callbacks.data_received = settings.data_received_callback;
             callbacks.packet_send_requested = settings.packet_send_requested_callback;
             callbacks.channel_reset = settings.channel_reset_callback;
+            callbacks.ack_received = settings.ack_received_callback;
+            callbacks.reset_ack_received = settings.reset_ack_received_callback;
+            callbacks.ping_ack_received = settings.ping_ack_received_callback;
+            callbacks.ping_received = settings.ping_received_callback;
         }
 
         // inline uint32_t GetCurrentSendId() const { return next_send_id; }
