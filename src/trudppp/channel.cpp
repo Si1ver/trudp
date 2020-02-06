@@ -242,14 +242,13 @@ namespace trudppp {
             next_trigger_time = expected_timestamp;
         }
 
-        auto sent_packet_it = std::lower_bound(std::begin(sent_packets), std::end(sent_packets), packet.GetId(),
-            [](const SentPacketItem& sent_packet, uint32_t id) { return sent_packet.packet.GetId() < id; });
-
         //if it's a retry, just update packet
-        if (sent_packet_it != std::end(sent_packets) && sent_packet_it->packet.GetId() == packet.GetId()) {
-            sent_packet_it->retry_count++;
-            sent_packet_it->packet = std::move(packet);
-            sent_packet_it->expected_time = expected_timestamp;
+        if (!sent_packets.empty() && sent_packets.front().packet.GetId() == packet.GetId()) {
+            //we resend only first packet, so there is no need to check all packets
+            auto& first_packet = sent_packets.front();
+            first_packet.retry_count++;
+            first_packet.packet = std::move(packet);
+            first_packet.expected_time = expected_timestamp;
         } else {
             SentPacketItem sent_packet(std::move(packet), expected_timestamp);
 
