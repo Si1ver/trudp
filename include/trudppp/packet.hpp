@@ -76,6 +76,8 @@ namespace trudppp {
         inline void SetTimestamp(const Timestamp& new_timestamp) { timestamp = new_timestamp; }
 
         inline void SetTimestampToNow() { timestamp.SetToNow(); }
+
+        PacketInternal& operator=(PacketInternal&& packet) = default;
     };
 
     //Trudppp owning packet wrapper for client side usage

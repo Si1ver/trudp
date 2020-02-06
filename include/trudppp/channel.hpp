@@ -135,7 +135,7 @@ namespace trudppp {
         uint32_t next_send_id = 0;
         uint32_t expected_receive_id = 0;
 
-        SentPacketsType sent_packets;//sorted by packet id list of sent packets, packets with smaller numbers go last
+        SentPacketsType sent_packets;//sorted by packet id list of sent packets, packets with smaller numbers go first
         ScheduledPacketsType scheduled_packets;
 
         ReceivedPacketsType received_packets;

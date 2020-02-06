@@ -236,18 +236,26 @@ namespace trudppp {
     }
 
     void Channel::OnPacketSent(Timestamp send_time, PacketInternal&& packet) {
+        //TODO: maybe expected ts should be dependent on number of retries
         auto expected_timestamp = ExpectedTimestamp(send_time, packet);
-
-        SentPacketItem sent_packet(std::move(packet), expected_timestamp);
-
         if (!next_trigger_time.has_value()) {
             next_trigger_time = expected_timestamp;
         }
 
-        auto queue_place_it = std::upper_bound(std::begin(sent_packets), std::end(sent_packets), packet.GetId(),
-            [](uint32_t id, const SentPacketItem& sent_packet) { return sent_packet.packet.GetId() > id; });
+        auto sent_packet_it = std::lower_bound(std::begin(sent_packets), std::end(sent_packets), packet.GetId(),
+            [](const SentPacketItem& sent_packet, uint32_t id) { return sent_packet.packet.GetId() < id; });
 
-        sent_packets.insert(queue_place_it, std::move(sent_packet));
+        //if it's a retry, just update packet
+        if (sent_packet_it != std::end(sent_packets) && sent_packet_it->packet.GetId() == packet.GetId()) {
+            sent_packet_it->retry_count++;
+            sent_packet_it->packet = std::move(packet);
+            sent_packet_it->expected_time = expected_timestamp;
+        } else {
+            SentPacketItem sent_packet(std::move(packet), expected_timestamp);
+
+            //new packet, so we guarantee that its id > then ids of all packets in sent_packets, just push back
+            sent_packets.emplace_back(std::move(sent_packet));
+        }
     }
 
     std::optional<Timestamp> Channel::Trigger(Timestamp trigger_time) {
@@ -261,17 +269,13 @@ namespace trudppp {
     }
 
     void Channel::TriggerSendQueue(Timestamp trigger_time) {
+        auto& first_packet_to_resend = sent_packets.front();
         // TODO: this check ported from legacy code, do we really need it?
         // or maybe add ForceTrigger method, which ignores this check
-        auto& first_packet_to_resend = sent_packets.back();
         if (first_packet_to_resend.expected_time > trigger_time) {
             next_trigger_time = first_packet_to_resend.expected_time;
         } else {
-            auto packet_to_send = std::move(sent_packets.back());
-            //TODO: here we lose all info contained in SentPacketItem, e.g. retry num
-            sent_packets.pop_back();
-
-            callbacks.EmitSendPacketRequested(std::move(packet_to_send.packet));
+            callbacks.EmitSendPacketRequested(std::move(first_packet_to_resend.packet));
 
             next_trigger_time = PickNextTriggerTime();
         }
