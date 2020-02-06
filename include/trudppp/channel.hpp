@@ -160,8 +160,8 @@ namespace trudppp {
 
         Callbacks callbacks;
 
-        uint32_t next_send_id = 0;
-        uint32_t expected_receive_id = 0;
+        SequenceId next_send_id = 0;
+        SequenceId expected_receive_id = 0;
 
         SentPacketsType sent_packets;//sorted by packet id list of sent packets, packets with smaller numbers go first
         ScheduledPacketsType scheduled_packets;
@@ -185,7 +185,7 @@ namespace trudppp {
         inline std::optional<Timestamp> PickNextTriggerTime() const;
         inline void TriggerSendQueue(Timestamp trigger_time);
 
-        inline uint32_t IncrementPacketId(uint32_t id) {
+        uint32_t IncrementPacketId(uint32_t id) {
             ++id;
 
             // This check is ported from legacy code.
@@ -196,6 +196,8 @@ namespace trudppp {
 
             return id;
         }
+
+        inline void SendReset(Timestamp reset_timestamp);
 
     public:
         Channel(const Settings& settings)

@@ -146,13 +146,13 @@ namespace trudppp {
 
                 // TODO: Receive queue.
 
-                uint32_t packet_id = received_packet.GetId();
-
+                auto packet_id = received_packet.GetId();
                 // This check is ported from legacy code.
                 if (expected_receive_id == 0 && packet_id != 0) {
-                    Reset();
+                    SendReset(receive_time);
                     break;
                 }
+
 
                 if (expected_receive_id == packet_id) {
                     callbacks.EmitDataReceived(received_packet.GetData(), true);
@@ -177,7 +177,6 @@ namespace trudppp {
                     break;
                 }
 
-                // TODO: replace with modulus subtraction
                 if (expected_receive_id < packet_id) {
                     auto existing_item = received_packets.find(packet_id);
 
@@ -194,7 +193,7 @@ namespace trudppp {
 
                 // This check is ported from legacy code.
                 if (packet_id == 0 && expected_receive_id != 1) {
-                    Reset();
+                    SendReset(receive_time);
                     break;
                 }
 
@@ -220,7 +219,7 @@ namespace trudppp {
         //TODO: maybe we can move data here?
         auto packet = PacketInternal(PacketType::Data, channel_number, next_send_id, std::move(received_data), Timestamp());
 
-        next_send_id = IncrementPacketId(next_send_id);
+        ++next_send_id;
 
         SendTrudpPacket(std::move(packet));
     }
@@ -287,5 +286,9 @@ namespace trudppp {
 
             next_trigger_time = PickNextTriggerTime();
         }
+    }
+
+    void Channel::SendReset(Timestamp reset_timestamp) {
+        auto reset_packet = PacketInternal(PacketType::Reset, channel_number, next_send_id, reset_timestamp);
     }
 } // namespace trudppp

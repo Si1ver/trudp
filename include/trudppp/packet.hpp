@@ -19,6 +19,36 @@ namespace trudppp {
         AckOnPing = 5, ///< Pong packet.
     };
 
+    struct SequenceId
+    {
+        static constexpr long long packet_id_limit = 0x100000000LL;
+
+        SequenceId(uint32_t id_) : id(id_) {}
+        uint32_t id = 0;
+
+        bool operator<(SequenceId rhs) const;
+        bool operator==(SequenceId rhs) const { return id == rhs.id; }
+        bool operator==(int id_) const { return id == id_;}
+        bool operator!=(SequenceId rhs) const { return id != rhs.id; }
+        bool operator!=(int id_) const { return id != id_;}
+
+        operator uint32_t() const { return id; }
+
+        void operator++() { ++id; if(id == 0) { ++id; } }
+
+        SequenceId operator++(int) {
+            SequenceId old(id);
+
+            ++id;
+            if(id == 0) { ++id; }
+
+            return old;
+        }
+
+    private:
+        inline static uint32_t ModuleSub(uint64_t id_a, uint64_t id_b, uint64_t mod);
+    };
+
     /// Trudppp packet.
     class PacketInternal {
     private:
@@ -29,7 +59,7 @@ namespace trudppp {
         uint8_t channel_number;
 
         /// Packet identifier.
-        uint32_t id;
+        SequenceId id;
 
         /// Payload data transmitted with packet.
         std::vector<uint8_t> data;
@@ -42,15 +72,15 @@ namespace trudppp {
     public:
         PacketInternal() : type(PacketType::Data), channel_number(0), id(0) {}
 
-        PacketInternal(PacketType type, uint8_t channel_number, uint32_t id, const Timestamp& timestamp)
+        PacketInternal(PacketType type, uint8_t channel_number, SequenceId id, const Timestamp& timestamp)
             : type(type), channel_number(channel_number), id(id), timestamp(timestamp) {}
 
-        PacketInternal(PacketType type, uint8_t channel_number, uint32_t id,
+        PacketInternal(PacketType type, uint8_t channel_number, SequenceId id,
             const std::vector<uint8_t>& data, const Timestamp& timestamp)
             : type(type), channel_number(channel_number), id(id), data(data), timestamp(timestamp) {
         }
 
-        PacketInternal(PacketType type, uint8_t channel_number, uint32_t id, std::vector<uint8_t>&& data,
+        PacketInternal(PacketType type, uint8_t channel_number, SequenceId id, std::vector<uint8_t>&& data,
             const Timestamp& timestamp)
             : type(type), channel_number(channel_number), id(id), data(std::move(data)),
               timestamp(timestamp) {}
@@ -67,7 +97,7 @@ namespace trudppp {
 
         inline uint8_t GetChannelNumber() const { return channel_number; }
 
-        inline uint32_t GetId() const { return id; }
+        inline SequenceId GetId() const { return id; }
 
         inline const std::vector<uint8_t>& GetData() const { return data; }
 
