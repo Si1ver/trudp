@@ -73,6 +73,12 @@ namespace trudppp {
         channel.SendData(std::move(data));
     }
 
+    void Connection::SendDataUnreliable(int channel_number, std::vector<uint8_t>&& data) {
+        auto& channel = GetOrCreateChannel(channel_number);
+
+        channel.SendDataUnreliable(std::move(data));
+    }
+
     void Connection::OnPacketSent(Timestamp send_time, Packet&& packet) {
         auto channel = GetChannel(packet.packet.GetChannelNumber());
 

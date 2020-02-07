@@ -40,6 +40,7 @@ namespace trudppp {
 
         void ProcessReceivedData(const std::vector<uint8_t>& received_data);
         void SendData(int channel_number, std::vector<uint8_t>&& data);
+        void SendDataUnreliable(int channel_number, std::vector<uint8_t>&& data);
         void OnPacketSent(Timestamp send_time, Packet&& packet);
     };
 } // namespace trudppp

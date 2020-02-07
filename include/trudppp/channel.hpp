@@ -83,6 +83,7 @@ namespace trudppp {
         typedef void ResetAckReceivedCallback(uint8_t channel_id);
         typedef void PingAckReceivedCallback(uint8_t channel_id);
         typedef void PingReceivedCallback(uint8_t channel_id);
+        typedef void SendDataCallback(uint8_t channel_id, std::vector<uint8_t>&& data);
 
         struct Settings {
             uint8_t channel_number;
@@ -94,6 +95,7 @@ namespace trudppp {
             std::function<ResetAckReceivedCallback> reset_ack_received_callback;
             std::function<PingAckReceivedCallback> ping_ack_received_callback;
             std::function<PingReceivedCallback> ping_received_callback;
+            std::function<SendDataCallback> send_data_callback;
         };
 
         struct Callbacks {
@@ -104,47 +106,54 @@ namespace trudppp {
             std::function<ResetAckReceivedCallback> reset_ack_received;
             std::function<PingAckReceivedCallback> ping_ack_received;
             std::function<PingReceivedCallback> ping_received;
+            std::function<SendDataCallback> send_data;
 
-            inline void EmitDataReceived(
+            void EmitDataReceived(
                 const std::vector<uint8_t>& received_data, bool is_reliable) const {
                 if (data_received) {
                     data_received(received_data, is_reliable);
                 }
             }
 
-            inline void EmitSendPacketRequested(PacketInternal&& packet_to_send) const {
+            void EmitSendPacketRequested(PacketInternal&& packet_to_send) const {
                 if (packet_send_requested) {
                     packet_send_requested(std::move(packet_to_send));
                 }
             }
 
-            inline void EmitChannelReset() const {
+            void EmitChannelReset() const {
                 if (channel_reset) {
                     channel_reset();
                 }
             }
 
-            inline void EmitAckReceived(uint32_t packet_id) const {
+            void EmitAckReceived(uint32_t packet_id) const {
                 if (ack_received) {
                     ack_received(packet_id);
                 }
             }
 
-            inline void EmitChannelResetAckReceived(uint8_t channel_id) const {
+            void EmitChannelResetAckReceived(uint8_t channel_id) const {
                 if (reset_ack_received) {
                     reset_ack_received(channel_id);
                 }
             }
 
-            inline void EmitPingAckReceived(uint8_t channel_id) const {
+            void EmitPingAckReceived(uint8_t channel_id) const {
                 if (ping_ack_received) {
                     ping_ack_received(channel_id);
                 }
             }
 
-            inline void EmitPingReceived(uint8_t channel_id) const {
+            void EmitPingReceived(uint8_t channel_id) const {
                 if (ping_received) {
                     ping_received(channel_id);
+                }
+            }
+
+            void EmitSendData(uint8_t channel_id, std::vector<uint8_t>&& data) {
+                if (send_data) {
+                    send_data(channel_id, std::move(data));
                 }
             }
         };
@@ -209,6 +218,7 @@ namespace trudppp {
             callbacks.reset_ack_received = settings.reset_ack_received_callback;
             callbacks.ping_ack_received = settings.ping_ack_received_callback;
             callbacks.ping_received = settings.ping_received_callback;
+            callbacks.send_data = settings.send_data_callback;
         }
 
         // inline uint32_t GetCurrentSendId() const { return next_send_id; }
@@ -217,6 +227,9 @@ namespace trudppp {
         void ProcessReceivedPacket(Timestamp receive_time, const PacketInternal& received_packet);
 
         void SendData(std::vector<uint8_t>&& data);
+        void SendDataUnreliable(std::vector<uint8_t>&& data) {
+            callbacks.EmitSendData(channel_number, std::move(data));
+        }
         void OnPacketSent(Timestamp send_time, PacketInternal&& packet);
 
         // TODO(new): Use trudp header for unreliable packets.
