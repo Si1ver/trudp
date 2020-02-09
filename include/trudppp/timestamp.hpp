@@ -7,6 +7,49 @@
 #include <cstdint>
 
 namespace trudppp {
+    class Duration {
+    public:
+        inline int64_t Microseconds() const {
+            return microseconds.count();
+        }
+
+        inline std::chrono::microseconds Value() const {
+            return microseconds;
+        }
+
+        inline static Duration Microseconds(int64_t microseconds) {
+            return Duration(std::chrono::microseconds(microseconds));
+        }
+
+        inline static Duration Milliseconds(int64_t milliseconds) {
+            auto chrono_milliseconds = std::chrono::milliseconds(milliseconds);
+            auto microseconds =
+                std::chrono::duration_cast<std::chrono::microseconds>(chrono_milliseconds);
+            return Duration(microseconds);
+        } 
+
+        inline static Duration Seconds(int64_t seconds) {
+            auto chrono_seconds = std::chrono::seconds(seconds);
+            auto microseconds =
+                std::chrono::duration_cast<std::chrono::microseconds>(chrono_seconds);
+            return Duration(microseconds);
+        } 
+
+        inline static Duration Minutes(int64_t minutes) {
+            auto chrono_minutes = std::chrono::milliseconds(minutes);
+            auto microseconds =
+                std::chrono::duration_cast<std::chrono::microseconds>(chrono_minutes);
+            return Duration(microseconds);
+        } 
+
+    private:
+        std::chrono::microseconds microseconds;
+
+        Duration() = delete;
+
+        explicit Duration(std::chrono::microseconds microseconds_) : microseconds(microseconds_) {}
+    };
+
     class Timestamp {
     public:
         Timestamp(const Timestamp& other) : time_point(other.time_point) {}
@@ -37,6 +80,19 @@ namespace trudppp {
             return time_point >= other.time_point;
         }
 
+        inline Timestamp operator+(const Duration& duration) {
+            return Timestamp(time_point + duration.Value());
+        }
+
+        inline Timestamp operator-(const Duration& duration) {
+            return Timestamp(time_point - duration.Value());
+        }
+
+        inline Duration operator-(const Timestamp& other) {
+            auto time_duration = time_point - other.time_point;
+            return Duration::Microseconds(time_duration.count());
+        }
+
         inline int64_t MicrosecondsSinceEpoch() const {
             return time_point.time_since_epoch().count();
         }
@@ -44,22 +100,6 @@ namespace trudppp {
         inline static Timestamp Now() {
             using namespace std::chrono;
             return Timestamp(time_point_cast<microseconds>(system_clock::now()));
-        }
-
-        inline Timestamp ShiftMicroseconds(int64_t shift_us) const {
-            return Timestamp(time_point + std::chrono::microseconds(shift_us));
-        }
-
-        inline Timestamp ShiftMilliseconds(int64_t shift_ms) const {
-            return Timestamp(time_point + std::chrono::milliseconds(shift_ms));
-        }
-
-        inline Timestamp ShiftSeconds(int64_t shift_sec) const {
-            return Timestamp(time_point + std::chrono::seconds(shift_sec));
-        }
-
-        inline Timestamp ShiftMinutes(int64_t shift_min) const {
-            return Timestamp(time_point + std::chrono::minutes(shift_min));
         }
 
     private:

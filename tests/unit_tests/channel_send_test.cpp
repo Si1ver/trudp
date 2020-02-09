@@ -124,8 +124,8 @@ TEST(ChannelSendTest, ReceiveOutOfOrder) {
     ChannelTestHelper test_helper;
 
     Timestamp timestamp2 = Timestamp::Now();
-    Timestamp timestamp1 = timestamp2.ShiftMicroseconds(-10);
-    Timestamp timestamp0 = timestamp1.ShiftMicroseconds(-20);
+    Timestamp timestamp1 = timestamp2 - Duration::Microseconds(10);
+    Timestamp timestamp0 = timestamp1 - Duration::Microseconds(20);
 
     const std::vector<uint8_t> packet1_data = {1, 2, 3, 4, 5};
     const std::vector<uint8_t> packet2_data = {5, 4, 3, 2, 1, 0};
@@ -145,8 +145,8 @@ TEST(ChannelSendTest, ReceiveOutOfOrder) {
         EXPECT_THAT(test_helper.packet_send_requested_calls, testing::IsEmpty());
 
         Timestamp data0_timestamp = Timestamp::Now();
-        Timestamp data1_timestamp = data0_timestamp.ShiftMilliseconds(2);
-        Timestamp data2_timestamp = data0_timestamp.ShiftMilliseconds(1);
+        Timestamp data1_timestamp = data0_timestamp + Duration::Milliseconds(2);
+        Timestamp data2_timestamp = data0_timestamp + Duration::Milliseconds(1);
 
         channel.ProcessReceivedPacket(data0_timestamp, data0_packet);
 

@@ -19,7 +19,7 @@ namespace trudppp::internal {
         // Serialized trudppp timestamp is overflowing approximately every hour.
         // To restore original value we assume that packet was sent less than an hour ago.
         // Add ten minutes to compensate possible time difference between local and remove hosts.
-        Timestamp timestamp = Timestamp::Now().ShiftMinutes(10);
+        Timestamp timestamp = Timestamp::Now() + Duration::Minutes(10);
 
         int64_t reference_time_since_epoch_us = timestamp.MicrosecondsSinceEpoch();
 
@@ -29,7 +29,7 @@ namespace trudppp::internal {
         // Subtraction work correctly even if overflow occurred between two moments.
         int32_t difference_us = reference_serialized_timestamp - serialized_timestamp;
 
-        return timestamp.ShiftMicroseconds(-difference_us);
+        return timestamp - Duration::Microseconds(difference_us);
     }
 
     std::vector<uint8_t> DeserializePacketData(const std::vector<uint8_t>& received_data) {

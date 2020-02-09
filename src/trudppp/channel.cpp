@@ -52,7 +52,7 @@ namespace trudppp {
     Timestamp Channel::ExpectedTimestamp(Timestamp send_time, const PacketInternal& packet) {
         auto rtt = std::min(kMaxRTTUs, triptime_middle + kRTTMagicNumberUs);
 
-        return send_time.ShiftMicroseconds(rtt);
+        return send_time + Duration::Microseconds(rtt);
     }
 
     std::optional<Timestamp> Channel::PickNextTriggerTime() const {
