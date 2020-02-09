@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cstdint>
+#include <unordered_map>
 #include <vector>
 
 #include "gtest/gtest.h"
