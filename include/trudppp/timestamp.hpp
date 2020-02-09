@@ -13,7 +13,7 @@ namespace trudppp {
 
         Timestamp(const Timestamp& other) { time_point = other.time_point; }
 
-        Timestamp& operator=(const Timestamp& other) { time_point = other.time_point; }
+        Timestamp& operator=(const Timestamp& other) { time_point = other.time_point; return *this; }
 
         inline bool operator==(const Timestamp& other) const {
             return time_point == other.time_point;
