@@ -7,13 +7,14 @@
 #include <functional>
 #include <list>
 #include <map>
-#include <queue>
 #include <optional>
+#include <queue>
+#include <unordered_map>
 
 #include <trudppp/callbacks.hpp>
+#include <trudppp/constants.hpp>
 #include <trudppp/packet.hpp>
 #include <trudppp/timestamp.hpp>
-#include <trudppp/constants.hpp>
 
 namespace trudppp {
     struct SentPacketItem {
