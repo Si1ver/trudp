@@ -1,5 +1,6 @@
 trigger:
 - 'feature/trudppp'
+- 'feature/sending_packets'
 
 jobs:
 - job: test_linux_bazel
