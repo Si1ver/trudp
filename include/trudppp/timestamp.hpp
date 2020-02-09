@@ -9,7 +9,7 @@
 namespace trudppp {
     class Timestamp {
     public:
-        Timestamp(const Timestamp& other) { time_point = other.time_point; }
+        Timestamp(const Timestamp& other) : time_point(other.time_point) {}
 
         Timestamp& operator=(const Timestamp& other) { time_point = other.time_point; return *this; }
 
@@ -46,34 +46,32 @@ namespace trudppp {
             return Timestamp(time_point_cast<microseconds>(system_clock::now()));
         }
 
-        inline void ShiftMicroseconds(int64_t shift_us) {
-            time_point += std::chrono::microseconds(shift_us);
+        inline Timestamp ShiftMicroseconds(int64_t shift_us) const {
+            return Timestamp(time_point + std::chrono::microseconds(shift_us));
         }
 
-        inline void ShiftMilliseconds(int64_t shift_ms) {
-            time_point += std::chrono::milliseconds(shift_ms);
+        inline Timestamp ShiftMilliseconds(int64_t shift_ms) const {
+            return Timestamp(time_point + std::chrono::milliseconds(shift_ms));
         }
 
-        inline void ShiftSeconds(int64_t shift_sec) {
-            time_point += std::chrono::seconds(shift_sec);
+        inline Timestamp ShiftSeconds(int64_t shift_sec) const {
+            return Timestamp(time_point + std::chrono::seconds(shift_sec));
         }
 
-        inline void ShiftMinutes(int64_t shift_min) {
-            time_point += std::chrono::minutes(shift_min);
+        inline Timestamp ShiftMinutes(int64_t shift_min) const {
+            return Timestamp(time_point + std::chrono::minutes(shift_min));
         }
 
     private:
         // Timestamp is explicitly defined to store time in microseconds.
-        using TimestampTimePoint = std::chrono::time_point<std::chrono::system_clock, std::chrono::microseconds>;
+        using TimePoint = std::chrono::time_point<std::chrono::system_clock, std::chrono::microseconds>;
 
-        TimestampTimePoint time_point;
+        TimePoint time_point;
 
         // Default constructor is deleted to prevent accidental creation of new timestamp value.
         Timestamp() = delete;
 
-        Timestamp(TimestampTimePoint time_point_) {
-            time_point = time_point_;
-        }
+        Timestamp(TimePoint time_point_) : time_point(time_point_) {}
     };
 } // namespace trudppp
 

@@ -29,8 +29,7 @@ TEST(SerializedPacketTest, TimestampConsistense) {
 
     const int64_t advancement = 1000;
 
-    Timestamp advanced_now(now);
-    advanced_now.ShiftMicroseconds(advancement);
+    Timestamp advanced_now = now.ShiftMicroseconds(advancement);
 
     uint32_t serialized_advanced_now = internal::SerializeTimestamp(advanced_now);
 
