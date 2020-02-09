@@ -64,7 +64,7 @@ TEST(SerializedPacketTest, DeserializeEmptyData) {
 TEST(SerializedPacketTest, PacketRoundtrip) {
     const PacketType packet_type = PacketType::Ping;
     const uint8_t channel = 1;
-    const uint32_t packet_id = 10;
+    const SequenceId packet_id = 10;
     const std::vector<uint8_t> data = {1, 2, 0, 7, 255};
     const Timestamp timestamp;
 
