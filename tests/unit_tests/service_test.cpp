@@ -19,7 +19,7 @@ namespace {
         const uint8_t channel = 1;
         const uint32_t packet_id = 0;
         const std::vector<uint8_t> data = {};
-        const Timestamp timestamp;
+        const Timestamp timestamp = Timestamp::Now();
 
         PacketInternal test_packet(packet_type, channel, packet_id, data, timestamp);
 

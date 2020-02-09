@@ -181,7 +181,7 @@ namespace trudppp {
                     auto existing_item = received_packets.find(packet_id);
 
                     if (existing_item == received_packets.end()) {
-                        Timestamp receive_timestamp;
+                        Timestamp receive_timestamp = Timestamp::Now();
 
                         received_packets.emplace(std::piecewise_construct,
                             std::make_tuple(packet_id),
@@ -217,7 +217,7 @@ namespace trudppp {
 
     void Channel::SendData(std::vector<uint8_t>&& received_data) {
         //TODO: maybe we can move data here?
-        auto packet = PacketInternal(PacketType::Data, channel_number, next_send_id, std::move(received_data), Timestamp());
+        auto packet = PacketInternal(PacketType::Data, channel_number, next_send_id, std::move(received_data), Timestamp::Now());
 
         ++next_send_id;
 

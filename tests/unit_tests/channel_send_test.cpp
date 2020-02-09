@@ -50,7 +50,7 @@ MATCHER_P(PacketIsEqual, packet, "") { \
 TEST(ChannelSendTest, SendData) {
     ChannelTestHelper test_helper;
 
-    Timestamp timestamp;
+    Timestamp timestamp = Timestamp::Now();
     const std::vector<uint8_t> packet_data = {1, 2, 3, 4, 5};
 
     const PacketInternal data_packet(PacketType::Data, kChannelNumber, 0, packet_data, timestamp);
@@ -62,7 +62,7 @@ TEST(ChannelSendTest, SendData) {
         EXPECT_THAT(test_helper.data_received_calls, testing::IsEmpty());
         EXPECT_THAT(test_helper.packet_send_requested_calls, testing::IsEmpty());
 
-        channel.ProcessReceivedPacket(Timestamp(), data_packet);
+        channel.ProcessReceivedPacket(Timestamp::Now(), data_packet);
 
         ASSERT_THAT(test_helper.data_received_calls, testing::SizeIs(1));
         EXPECT_THAT(test_helper.data_received_calls[0], testing::ElementsAreArray(packet_data));
@@ -75,7 +75,7 @@ TEST(ChannelSendTest, SendData) {
 TEST(ChannelSendTest, SendPing) {
     ChannelTestHelper test_helper;
 
-    Timestamp timestamp;
+    Timestamp timestamp = Timestamp::Now();
     const std::vector<uint8_t> packet_data = {1, 2, 3, 4, 5};
 
     const PacketInternal ping_packet(PacketType::Ping, kChannelNumber, 0, packet_data, timestamp);
@@ -87,7 +87,7 @@ TEST(ChannelSendTest, SendPing) {
         EXPECT_THAT(test_helper.data_received_calls, testing::IsEmpty());
         EXPECT_THAT(test_helper.packet_send_requested_calls, testing::IsEmpty());
 
-        channel.ProcessReceivedPacket(Timestamp(), ping_packet);
+        channel.ProcessReceivedPacket(Timestamp::Now(), ping_packet);
 
         EXPECT_THAT(test_helper.data_received_calls, testing::IsEmpty());
 
@@ -99,7 +99,7 @@ TEST(ChannelSendTest, SendPing) {
 TEST(ChannelSendTest, SendReset) {
     ChannelTestHelper test_helper;
 
-    Timestamp timestamp;
+    Timestamp timestamp = Timestamp::Now();
     const std::vector<uint8_t> packet_data = {1, 2, 3, 4, 5};
 
     const PacketInternal reset_packet(PacketType::Reset, kChannelNumber, 0, packet_data, timestamp);
@@ -111,7 +111,7 @@ TEST(ChannelSendTest, SendReset) {
         EXPECT_THAT(test_helper.data_received_calls, testing::IsEmpty());
         EXPECT_THAT(test_helper.packet_send_requested_calls, testing::IsEmpty());
 
-        channel.ProcessReceivedPacket(Timestamp(), reset_packet);
+        channel.ProcessReceivedPacket(Timestamp::Now(), reset_packet);
 
         EXPECT_THAT(test_helper.data_received_calls, testing::IsEmpty());
 
@@ -123,7 +123,7 @@ TEST(ChannelSendTest, SendReset) {
 TEST(ChannelSendTest, ReceiveOutOfOrder) {
     ChannelTestHelper test_helper;
 
-    Timestamp timestamp2;
+    Timestamp timestamp2 = Timestamp::Now();
     Timestamp timestamp1(timestamp2);
     timestamp1.ShiftMicroseconds(-10);
     Timestamp timestamp0(timestamp1);
@@ -146,7 +146,9 @@ TEST(ChannelSendTest, ReceiveOutOfOrder) {
         EXPECT_THAT(test_helper.data_received_calls, testing::IsEmpty());
         EXPECT_THAT(test_helper.packet_send_requested_calls, testing::IsEmpty());
 
-        Timestamp data0_timestamp, data1_timestamp, data2_timestamp;
+        Timestamp data0_timestamp = Timestamp::Now();
+        Timestamp data1_timestamp = Timestamp::Now();
+        Timestamp data2_timestamp = Timestamp::Now();
 
         data1_timestamp.ShiftMilliseconds(2);
         data2_timestamp.ShiftMilliseconds(1);

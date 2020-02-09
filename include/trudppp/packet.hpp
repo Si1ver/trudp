@@ -70,7 +70,7 @@ namespace trudppp {
         PacketInternal& operator=(const PacketInternal&) = delete;
 
     public:
-        PacketInternal() : type(PacketType::Data), channel_number(0), id(0) {}
+        PacketInternal() : type(PacketType::Data), channel_number(0), id(0), timestamp(Timestamp::Now()) {}
 
         PacketInternal(PacketType type, uint8_t channel_number, SequenceId id, const Timestamp& timestamp)
             : type(type), channel_number(channel_number), id(id), timestamp(timestamp) {}
@@ -104,8 +104,6 @@ namespace trudppp {
         inline const Timestamp& GetTimestamp() const { return timestamp; }
 
         inline void SetTimestamp(const Timestamp& new_timestamp) { timestamp = new_timestamp; }
-
-        inline void SetTimestampToNow() { timestamp.SetToNow(); }
 
         PacketInternal& operator=(PacketInternal&& packet) = default;
     };

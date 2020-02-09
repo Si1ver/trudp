@@ -18,7 +18,7 @@ namespace trudppp::internal {
     Timestamp DeserializeTimestamp(uint32_t serialized_timestamp) {
         // Serialized trudppp timestamp is overflowing approximately every hour.
         // To restore original value we assume that packet was sent less than an hour ago.
-        Timestamp timestamp;
+        Timestamp timestamp = Timestamp::Now();
 
         // Add ten minutes to compensate possible time difference between local and remove hosts.
         timestamp.ShiftMinutes(10);

@@ -9,8 +9,6 @@
 namespace trudppp {
     class Timestamp {
     public:
-        Timestamp() { SetToNow(); }
-
         Timestamp(const Timestamp& other) { time_point = other.time_point; }
 
         Timestamp& operator=(const Timestamp& other) { time_point = other.time_point; return *this; }
@@ -43,9 +41,9 @@ namespace trudppp {
             return time_point.time_since_epoch().count();
         }
 
-        inline void SetToNow() {
+        inline static Timestamp Now() {
             using namespace std::chrono;
-            time_point = time_point_cast<microseconds>(system_clock::now());
+            return Timestamp(time_point_cast<microseconds>(system_clock::now()));
         }
 
         inline void ShiftMicroseconds(int64_t shift_us) {
@@ -66,7 +64,16 @@ namespace trudppp {
 
     private:
         // Timestamp is explicitly defined to store time in microseconds.
-        std::chrono::time_point<std::chrono::system_clock, std::chrono::microseconds> time_point;
+        using TimestampTimePoint = std::chrono::time_point<std::chrono::system_clock, std::chrono::microseconds>;
+
+        TimestampTimePoint time_point;
+
+        // Default constructor is deleted to prevent accidental creation of new timestamp value.
+        Timestamp() = delete;
+
+        Timestamp(TimestampTimePoint time_point_) {
+            time_point = time_point_;
+        }
     };
 } // namespace trudppp
 

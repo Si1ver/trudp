@@ -13,7 +13,7 @@ using namespace trudppp;
 MATCHER_P(TimestampIsEqual, timestamp, "") { return arg == timestamp; }
 
 TEST(SerializedPacketTest, TimestampRoundtrip) {
-    Timestamp now;
+    Timestamp now = Timestamp::Now();
 
     uint32_t serialized_now = internal::SerializeTimestamp(now);
 
@@ -23,7 +23,7 @@ TEST(SerializedPacketTest, TimestampRoundtrip) {
 }
 
 TEST(SerializedPacketTest, TimestampConsistense) {
-    Timestamp now;
+    Timestamp now = Timestamp::Now();
 
     uint32_t serialized_now = internal::SerializeTimestamp(now);
 
@@ -66,7 +66,7 @@ TEST(SerializedPacketTest, PacketRoundtrip) {
     const uint8_t channel = 1;
     const SequenceId packet_id = 10;
     const std::vector<uint8_t> data = {1, 2, 0, 7, 255};
-    const Timestamp timestamp;
+    const Timestamp timestamp = Timestamp::Now();
 
     PacketInternal original_packet(packet_type, channel, packet_id, data, timestamp);
 
